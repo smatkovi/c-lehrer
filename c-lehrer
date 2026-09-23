@@ -1,0 +1,427 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""C-Lehrer: C und C++ lernen, mit Blick auf Simulation.
+
+PySide over Qt 4.7 and QtQuick 1.1 -- the only combination this device has.
+All the state lives here in Python; the QML reads properties and calls
+slots, so there is exactly one place where the course logic is.
+
+The one part that is not Python is bin/crun, the C interpreter the
+learner's own programs run in.
+"""
+import os
+import sys
+import threading
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from PySide.QtCore import QObject, QUrl, Slot, Signal, Property
+from PySide.QtGui import QApplication
+from PySide.QtDeclarative import QDeclarativeView
+
+import config
+import curriculum
+import check
+import engine as engine_module
+import placement as placement_module
+import plot as plot_module
+import runner
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+class Course(QObject):
+    """Everything the QML talks to."""
+
+    changed = Signal()
+    placementChanged = Signal()
+    lessonChanged = Signal()
+    runChanged = Signal()
+    finished = Signal()          # a run came back
+
+    def __init__(self, parent=None):
+        QObject.__init__(self, parent)
+        self.engine = engine_module.Engine()
+        self.test = None
+        self._placement_result = None
+        self._chapter = None
+        self._lesson = None
+        self._index = -1          # -1 = the lesson text itself
+        self._right = 0
+        self._answered = 0
+        self._checked = False
+        self._was_right = False
+        self._show_solution = False
+        self._output = ""
+        self._error = ""
+        self._error_line = 0
+        self._plot = ""
+        self._running = False
+        self._seconds = 0.0
+        self.finished.connect(self._after_run)
+
+    # -- overview ----------------------------------------------------------
+
+    def _get_level(self):
+        return self.engine.level()
+
+    def _get_needs_placement(self):
+        return self.engine.needs_placement()
+
+    def _get_stats(self):
+        s = self.engine.stats()
+        s["planStufen"] = len(curriculum.PLAN)
+        s["hoechstesKapitel"] = max(c["level"] for c in curriculum.CHAPTERS)
+        return s
+
+    def _get_weak(self):
+        return self.engine.weak_topics()
+
+    level = Property(int, _get_level, notify=changed)
+    needsPlacement = Property(bool, _get_needs_placement, notify=changed)
+    stats = Property("QVariant", _get_stats, notify=changed)
+    weakTopics = Property("QVariant", _get_weak, notify=changed)
+
+    @Slot(result="QVariant")
+    def chapters(self):
+        out = []
+        for chapter in curriculum.CHAPTERS:
+            lessons = []
+            for lesson in chapter["lessons"]:
+                lessons.append({
+                    "id": lesson["id"], "titel": lesson["title"],
+                    "stand": self.engine.lesson_state(lesson["id"]),
+                    "aufgaben": len(lesson["exercises"]),
+                })
+            out.append({"id": chapter["id"], "titel": chapter["title"],
+                        "stufe": chapter["level"], "sprache": chapter["lang"],
+                        "text": chapter["blurb"], "lektionen": lessons})
+        return out
+
+    @Slot(result="QVariant")
+    def plan(self):
+        out = []
+        for ident, titel, stufe, sprache, fertig in curriculum.PLAN:
+            out.append({"id": ident, "titel": titel, "stufe": stufe,
+                        "sprache": sprache, "fertig": fertig})
+        return out
+
+    @Slot(result="QVariant")
+    def nextLesson(self):
+        chapter, lesson = self.engine.next_lesson()
+        if not lesson:
+            return {"leer": True}
+        return {"leer": False, "id": lesson["id"], "titel": lesson["title"],
+                "kapitel": chapter["title"], "stufe": chapter["level"]}
+
+    # -- placement ----------------------------------------------------------
+
+    @Slot()
+    def startPlacement(self):
+        self.test = placement_module.Test()
+        self._placement_result = None
+        self.test.next_item()
+        self.placementChanged.emit()
+
+    def _get_placement_question(self):
+        if not self.test or not self.test.current:
+            return {"leer": True}
+        entry = self.test.current
+        return {"leer": False, "frage": entry["q"], "code": entry["code"],
+                "optionen": entry["options"],
+                "nummer": self.test.asked() + 1}
+
+    def _get_placement_done(self):
+        return bool(self._placement_result)
+
+    def _get_placement_result(self):
+        return self._placement_result or {"leer": True}
+
+    placementQuestion = Property("QVariant", _get_placement_question,
+                                 notify=placementChanged)
+    placementDone = Property(bool, _get_placement_done, notify=placementChanged)
+    placementResult = Property("QVariant", _get_placement_result,
+                               notify=placementChanged)
+
+    @Slot(int)
+    def answerPlacement(self, chosen):
+        """One tap answers and moves on -- no second tap to continue.
+
+        Asked for explicitly: a test that needs two taps per question feels
+        twice as long as it is.
+        """
+        if not self.test or not self.test.current:
+            return
+        self.test.answer(chosen)
+        if self.test.next_item() is None:
+            result = self.test.result()
+            self.engine.apply_placement(result)
+            weak = self.engine.weak_topics()
+            chapter, lesson = self.engine.next_lesson()
+            result = dict(result)
+            result["leer"] = False
+            result["schwach"] = weak
+            result["weiterKapitel"] = chapter["title"] if chapter else ""
+            result["weiterLektion"] = lesson["title"] if lesson else ""
+            result["weiterId"] = lesson["id"] if lesson else ""
+            result["ueberStoff"] = (chapter is not None and
+                                    chapter["level"] < result["level"])
+            self._placement_result = result
+            self.changed.emit()
+        self.placementChanged.emit()
+
+    @Slot(result="QVariant")
+    def placementReview(self):
+        return self.engine.placement_review()
+
+    # -- lessons ------------------------------------------------------------
+
+    @Slot(unicode)
+    def startLesson(self, lesson_id):
+        chapter, lesson = curriculum.lesson_by_id(lesson_id)
+        self._chapter, self._lesson = chapter, lesson
+        self._index = -1
+        self._right = 0
+        self._answered = 0
+        self._reset_exercise()
+        self.lessonChanged.emit()
+
+    def _reset_exercise(self):
+        self._checked = False
+        self._was_right = False
+        self._show_solution = False
+        self._output = ""
+        self._error = ""
+        self._error_line = 0
+        self._plot = ""
+        self._seconds = 0.0
+        self.runChanged.emit()
+
+    def _get_lesson(self):
+        if not self._lesson:
+            return {"leer": True}
+        return {"leer": False,
+                "id": self._lesson["id"],
+                "titel": self._lesson["title"],
+                "kapitel": self._chapter["title"],
+                "stufe": self._chapter["level"],
+                "text": self._lesson["text"],
+                "beispiel": self._lesson["example"],
+                "ausgabe": self._lesson["output"],
+                "aufgaben": len(self._lesson["exercises"]),
+                "index": self._index}
+
+    lesson = Property("QVariant", _get_lesson, notify=lessonChanged)
+
+    def _get_exercise(self):
+        if not self._lesson or self._index < 0:
+            return {"leer": True}
+        if self._index >= len(self._lesson["exercises"]):
+            return {"leer": True, "fertig": True}
+        task = self._lesson["exercises"][self._index]
+        out = {"leer": False, "art": task["kind"], "frage": task.get("q", ""),
+               "warum": task.get("why", ""), "nummer": self._index + 1,
+               "gesamt": len(self._lesson["exercises"]),
+               "geprueft": self._checked, "richtig": self._was_right,
+               "loesungZeigen": self._show_solution}
+        if task["kind"] == "mc":
+            out["code"] = task.get("code", "")
+            out["optionen"] = task["options"]
+            out["antwort"] = task["answer"]
+        elif task["kind"] == "predict":
+            out["code"] = task["code"]
+            out["antwort"] = task["answer"]
+        elif task["kind"] == "blank":
+            out["code"] = task["code"]
+            out["luecken"] = len(task["answers"])
+            out["antworten"] = task["answers"]
+        elif task["kind"] == "parsons":
+            out["zeilen"] = task["lines"]
+            out["stoerer"] = task["distractors"]
+            gemischt = list(task["lines"]) + list(task["distractors"])
+            import random
+            rand = random.Random(hash(self._lesson["id"]) + self._index)
+            rand.shuffle(gemischt)
+            out["gemischt"] = gemischt
+        elif task["kind"] == "code":
+            gespeichert = self.engine.solution(self._lesson["id"], self._index)
+            out["vorlage"] = gespeichert or task["starter"]
+            out["erwartet"] = task["expect"]
+            out["loesung"] = task["solution"]
+            out["zeichnet"] = task.get("plot", False)
+        return out
+
+    exercise = Property("QVariant", _get_exercise, notify=lessonChanged)
+
+    @Slot()
+    def toExercises(self):
+        self._index = 0
+        self._reset_exercise()
+        self.lessonChanged.emit()
+
+    @Slot()
+    def nextExercise(self):
+        self._index += 1
+        self._reset_exercise()
+        if self._lesson and self._index >= len(self._lesson["exercises"]):
+            self.engine.finish_lesson(self._lesson["id"], self._right,
+                                      max(1, self._answered))
+            self.changed.emit()
+        self.lessonChanged.emit()
+
+    @Slot()
+    def showSolution(self):
+        self._show_solution = True
+        self.lessonChanged.emit()
+
+    def _record(self, right):
+        if not self._checked:
+            self._answered += 1
+            if right:
+                self._right += 1
+        self._checked = True
+        self._was_right = right
+        self.lessonChanged.emit()
+
+    @Slot(int, result=bool)
+    def answerChoice(self, chosen):
+        task = self._lesson["exercises"][self._index]
+        right = (chosen == task["answer"])
+        self._record(right)
+        return right
+
+    @Slot(unicode, result=bool)
+    def answerText(self, text):
+        """For predict: does the guess match what the program will print?"""
+        task = self._lesson["exercises"][self._index]
+        right = check.output_matches(text, task["answer"])
+        self._record(right)
+        return right
+
+    @Slot("QVariant", result=bool)
+    def answerBlanks(self, values):
+        task = self._lesson["exercises"][self._index]
+        given = [unicode(v) for v in values]
+        right = len(given) == len(task["answers"])
+        if right:
+            for i in range(len(given)):
+                alts = task["alts"][i] if i < len(task["alts"]) else []
+                if not check.text_matches(given[i], task["answers"][i], alts):
+                    right = False
+                    break
+        self._record(right)
+        return right
+
+    @Slot("QVariant", result=bool)
+    def answerParsons(self, lines):
+        task = self._lesson["exercises"][self._index]
+        given = [unicode(v).strip() for v in lines]
+        want = [l.strip() for l in task["lines"]]
+        right = (given == want)
+        self._record(right)
+        return right
+
+    # -- running code -------------------------------------------------------
+
+    def _get_running(self):
+        return self._running
+
+    def _get_output(self):
+        return self._output
+
+    def _get_error(self):
+        return self._error
+
+    def _get_error_line(self):
+        return self._error_line
+
+    def _get_plot(self):
+        return self._plot
+
+    def _get_seconds(self):
+        return self._seconds
+
+    running = Property(bool, _get_running, notify=runChanged)
+    output = Property(unicode, _get_output, notify=runChanged)
+    error = Property(unicode, _get_error, notify=runChanged)
+    errorLine = Property(int, _get_error_line, notify=runChanged)
+    plotPath = Property(unicode, _get_plot, notify=runChanged)
+    seconds = Property(float, _get_seconds, notify=runChanged)
+
+    @Slot(unicode)
+    @Slot(unicode, int)
+    def runCode(self, code, seconds=10):
+        if self._running:
+            return
+        self._running = True
+        self._output = ""
+        self._error = ""
+        self._plot = ""
+        self.runChanged.emit()
+        thread = threading.Thread(target=self._run_worker, args=(code, seconds))
+        thread.daemon = True
+        thread.start()
+
+    def _run_worker(self, code, seconds):
+        self._result = runner.run(code, seconds)
+        self.finished.emit()      # back to the GUI thread
+
+    def _after_run(self):
+        """Runs in the GUI thread: painting belongs here, not in the worker."""
+        result = self._result
+        self._running = False
+        self._output = result.output
+        self._error = result.error
+        self._error_line = result.line
+        self._seconds = result.seconds
+        self._plot = ""
+        if result.series:
+            try:
+                path = plot_module.draw(result.series)
+                # QML caches by URL, so the picture needs a new name each time.
+                self._plot = "file://" + path + "?t=%f" % result.seconds
+            except Exception, exc:
+                self._error = self._error or ("Zeichnen fehlgeschlagen: %s" % exc)
+        self.runChanged.emit()
+
+    @Slot(unicode, result=bool)
+    def checkRun(self, text):
+        """Did the program the learner wrote say the right thing?"""
+        task = self._lesson["exercises"][self._index]
+        self.engine.save_solution(self._lesson["id"], self._index, text)
+        right = check.output_matches(self._output, task["expect"])
+        self._record(right)
+        return right
+
+    @Slot(unicode)
+    def keepCode(self, text):
+        if self._lesson and self._index >= 0:
+            self.engine.save_solution(self._lesson["id"], self._index, text)
+
+
+def main():
+    app = QApplication(sys.argv)
+    QApplication.setOrganizationName("c-lehrer")
+    QApplication.setApplicationName("c-lehrer")
+
+    course = Course()
+
+    view = QDeclarativeView()
+    view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
+    for path in ("/usr/lib/qt4/imports", "/usr/share/qt4/imports"):
+        view.engine().addImportPath(path)
+    view.rootContext().setContextProperty("course", course)
+    view.setSource(QUrl.fromLocalFile(os.path.join(ROOT, "qml", "main.qml")))
+    if view.status() == QDeclarativeView.Error:
+        for error in view.errors():
+            print "QML:", error.toString()
+        return 1
+    view.showFullScreen()
+    return app.exec_()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,15 @@
+Package: c-lehrer
+Version: @VERSION@
+Section: user/education
+Priority: optional
+Architecture: armel
+Depends: libqt4-declarative, libqt4-script, libqt4-gui, qt-components
+Maintainer: Sebastian Matkovich <sebastian.matkovich@gmail.com>
+Description: C und C++ lernen mit Blick auf Simulation
+ Ein Kurs von den ersten Werten bis zu Strömungslöser-Kernen, mit
+ Einstufungstest, Wiederholung nach Abstand und einem C-Interpreter an
+ Bord: Der Code, den man schreibt, läuft wirklich auf dem Gerät, und was
+ er ausgibt, wird gezeichnet.
+Maemo-Display-Name: C-Lehrer
+XB-Maemo-Icon-26:
+@ICON@

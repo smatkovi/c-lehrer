@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=C-Lehrer
+Comment=C und C++ lernen mit Blick auf Simulation
+Icon=/usr/share/icons/hicolor/80x80/apps/c-lehrer.png
+Exec=/opt/c-lehrer/bin/c-lehrer
+Terminal=false
+Categories=Education;
+X-Osso-Type=application/x-executable

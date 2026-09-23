@@ -1,0 +1,48 @@
+#!/bin/sh
+# Uebersetzt eine C++-Datei und fuehrt sie aus.
+#
+# Der Runner der App startet Ausfuehrer schlicht als "<pfad> <datei>". Fuer C
+# ist das picoc, ein echter Interpreter; C++ laesst sich nicht interpretieren,
+# also verbirgt sich hinter diesem Skript Uebersetzen und Starten in einem.
+#
+# Der Compiler kommt aus ../toolchain: die offiziellen Harmattan-SDK-Pakete,
+# mit dpkg-deb -x ausgepackt statt installiert. Es wird nichts am System
+# geaendert, und Entfernen heisst das Verzeichnis loeschen.
+#
+# Kein --sysroot: die Kopfdateien kommen aus dem Baum, die Bibliotheken vom
+# Geraet. Dessen libstdc++.so.6.0.12 ist genau die von GCC 4.4, das passt.
+QUELLE=$1
+[ -n "$QUELLE" ] || { echo "Keine Quelldatei angegeben."; exit 2; }
+
+HIER=$(cd "$(dirname "$0")" && pwd)
+TC=$HIER/../toolchain
+[ -d "$TC" ] || TC=$HIER/toolchain
+G=$TC/usr/lib/gcc/arm-linux-gnueabi/4.4
+
+if [ ! -x "$TC/usr/bin/g++-4.4" ]; then
+    echo "Der C++-Compiler fehlt. Er steckt im Paket c-lehrer-cpp."
+    exit 3
+fi
+
+# cc1plus haengt an libgmp und libmpfr. Beide liegen im Baum, nicht im
+# System -- ohne diese Zeile findet der Lader sie nicht.
+LD_LIBRARY_PATH=$TC/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
+
+ZIEL=${TMPDIR:-/tmp}/clehrer-cxx-$$
+trap 'rm -f "$ZIEL"' EXIT INT TERM
+
+# 2>&1: der Runner liest nur einen Kanal, Fehlermeldungen muessen also mit.
+"$TC/usr/bin/g++-4.4" \
+    -nostdinc \
+    -isystem "$TC/usr/include/c++/4.4" \
+    -isystem "$TC/usr/include/c++/4.4/arm-linux-gnueabi" \
+    -isystem "$TC/usr/include/c++/4.4/backward" \
+    -isystem "$G/include" \
+    -isystem "$G/include-fixed" \
+    -isystem "$TC/usr/include" \
+    -B "$G/" -B "$TC/usr/bin/" -B "$TC/usr/lib/" \
+    -L "$G" -L "$TC/usr/lib" \
+    -O1 -w -o "$ZIEL" "$QUELLE" 2>&1 || exit 1
+
+"$ZIEL"

@@ -1,0 +1,27 @@
+#!/bin/sh
+# g++ 4.4.1 fuer Harmattan, ohne einen einzigen Systemeingriff.
+#
+# Die offiziellen SDK-Pakete liegen hier ausgepackt (dpkg-deb -x), nicht
+# installiert: kein dpkg, keine Abhaengigkeitsaufloesung, nichts ersetzt.
+# Entfernen heisst das Verzeichnis loeschen.
+#
+# Kein --sysroot: die Kopfdateien kommen aus diesem Baum, die eigentlichen
+# Bibliotheken aber vom Geraet. libstdc++.so.6.0.12 dort ist genau die von
+# GCC 4.4 -- deshalb passt das zusammen. Mit --sysroot wuerde ld die
+# absoluten Pfade im Linkerskript /usr/lib/libc.so in den Baum umbiegen und
+# die echte libc nicht mehr finden.
+set -e
+TC=$(cd "$(dirname "$0")" && pwd)
+G=$TC/usr/lib/gcc/arm-linux-gnueabi/4.4
+
+exec "$TC/usr/bin/g++-4.4" \
+    -nostdinc \
+    -isystem "$TC/usr/include/c++/4.4" \
+    -isystem "$TC/usr/include/c++/4.4/arm-linux-gnueabi" \
+    -isystem "$TC/usr/include/c++/4.4/backward" \
+    -isystem "$G/include" \
+    -isystem "$G/include-fixed" \
+    -isystem "$TC/usr/include" \
+    -B "$G/" -B "$TC/usr/bin/" \
+    -L "$G" -L "$TC/usr/lib" \
+    "$@"

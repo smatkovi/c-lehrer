@@ -1,0 +1,17 @@
+Package: c-lehrer-cpp
+Version: @VERSION@
+Section: user/education
+Priority: optional
+Architecture: armel
+Depends: c-lehrer
+Maintainer: Sebastian Matkovich <sebastian.matkovich@gmail.com>
+Description: C++-Compiler für den C-Lehrer
+ Der g++ 4.4.1 aus dem Harmattan-SDK, ausgepackt unter
+ /opt/c-lehrer/toolchain statt ins System installiert: keine
+ Systemdatei wird ersetzt, keine Abhängigkeit erzwungen,
+ Entfernen räumt alles restlos weg. Damit laufen die
+ C++-Lektionen wirklich auf dem Gerät statt nur lesbar zu sein.
+ .
+ Es ist C++98 mit Bruchstücken von C++0x - Klassen, Referenzen,
+ RAII, Templates und die STL, aber keine Lambdas. Der Kurs ist
+ genau darauf zugeschnitten.
