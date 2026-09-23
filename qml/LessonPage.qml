@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // The lesson itself: one idea, a worked example that actually runs, then
 // the exercises. Running the example before being asked anything is the
@@ -70,7 +71,7 @@ Page {
             }
 
             Text {
-                text: "Beispiel"
+                text: W.w("Beispiel", course.language)
                 font.pixelSize: Style.headSize
                 color: Style.text
                 visible: !page.lektion.leer && page.lektion.beispiel !== ""
@@ -86,13 +87,13 @@ Page {
                 spacing: Style.gap
                 visible: !page.lektion.leer && page.lektion.beispiel !== ""
                 Button {
-                    text: course.running ? "läuft …" : "Ausführen"
+                    text: course.running ? W.w("läuft …", course.language) : W.w("Ausführen", course.language)
                     enabled: !course.running
                     width: spalte.width - 140
                     onClicked: course.runCode(page.lektion.beispiel, 30)
                 }
                 Button {
-                    text: "Stopp"
+                    text: W.w("Stopp", course.language)
                     width: 128
                     enabled: course.running
                     onClicked: course.stopRun()
@@ -106,7 +107,7 @@ Page {
                 wrapMode: Text.WordWrap
                 visible: course.output === "" && course.error === "" && !course.running
                           && !page.lektion.leer && page.lektion.ausgabe !== ""
-                text: "Erwartete Ausgabe:\n" + (page.lektion.leer ? "" : page.lektion.ausgabe)
+                text: W.w("Erwartete Ausgabe:\n", course.language) + (page.lektion.leer ? "" : page.lektion.ausgabe)
                 font.family: Style.mono
                 font.pixelSize: Style.codeSize
                 color: Style.faint
@@ -114,7 +115,7 @@ Page {
 
             Button {
                 width: parent.width
-                text: "Zu den Aufgaben (" + (page.lektion.leer ? 0 : page.lektion.aufgaben) + ")"
+                text: W.w("Zu den Aufgaben (", course.language) + (page.lektion.leer ? 0 : page.lektion.aufgaben) + ")"
                 onClicked: {
                     course.toExercises();
                     pageStack.push(Qt.resolvedUrl("ExercisePage.qml"));

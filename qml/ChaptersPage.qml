@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 Page {
     id: page
@@ -49,7 +50,7 @@ Page {
             spacing: Style.gap
 
             Text {
-                text: "Kapitel"
+                text: W.w("Kapitel", course.language)
                 font.pixelSize: Style.titleSize
                 color: Style.accent
             }
@@ -129,7 +130,7 @@ Page {
             // simply a button that does nothing.
             Item { width: 1; height: Style.pad }
             Text {
-                text: "Geplant"
+                text: W.w("Geplant", course.language)
                 font.pixelSize: Style.headSize
                 color: Style.faint
             }
@@ -148,7 +149,7 @@ Page {
 
             Button {
                 width: parent.width
-                text: "Zurück"
+                text: W.w("Zurück", course.language)
                 onClicked: pageStack.pop()
             }
             Item { width: 1; height: Style.pad }

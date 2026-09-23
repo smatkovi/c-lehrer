@@ -25,6 +25,8 @@ people to trust an output nobody produced.
 """
 from __future__ import unicode_literals
 
+from herleitungen import HERLEITUNGEN
+
 
 def mc(q, options, answer, why, code=""):
     """Read something, pick the right statement about it."""
@@ -67,6 +69,12 @@ def code(q, starter, expect, solution, why, plot=False, seconds=10):
 
 
 def lesson(ident, title, concepts, text, example, exercises, output=""):
+    # Die Herleitung haengt hinten an. Sie steht in herleitungen.py, damit
+    # alle Formeln des Kurses an einer Stelle zu ueberblicken sind: Was
+    # dort fehlt, hat im Kurs keine Begruendung.
+    h = HERLEITUNGEN.get(ident)
+    if h:
+        text = text + "\n\n" + h
     return {"id": ident, "title": title, "concepts": concepts, "text": text,
             "example": example, "output": output, "exercises": exercises}
 

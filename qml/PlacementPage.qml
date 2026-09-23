@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // One tap answers and the next question appears -- no second tap to
 // continue. A test that needs two taps per question feels twice as long.
@@ -45,7 +46,7 @@ Page {
             spacing: Style.gap
 
             Text {
-                text: "Frage " + (page.frage.leer ? "" : page.frage.nummer)
+                text: W.w("Frage ", course.language) + (page.frage.leer ? "" : page.frage.nummer)
                 font.pixelSize: Style.smallSize
                 color: Style.faint
             }
@@ -118,7 +119,7 @@ Page {
             spacing: Style.gap
 
             Text {
-                text: "Stufe " + (page.ergebnis.leer ? "" : page.ergebnis.level)
+                text: W.w("Stufe ", course.language) + (page.ergebnis.leer ? "" : page.ergebnis.level)
                 font.pixelSize: Style.titleSize
                 color: Style.accent
             }
@@ -161,13 +162,13 @@ Page {
                         font.pixelSize: Style.smallSize
                         color: Style.warn
                         visible: !page.ergebnis.leer && page.ergebnis.ueberStoff === true
-                        text: "Du liegst über dem, was bisher geschrieben ist. "
+                        text: W.w("Du liegst über dem, was bisher geschrieben ist. ", course.language)
                               + "Die höheren Kapitel kommen noch; bis dahin "
-                              + "findest du hier das, was es schon gibt."
+                              + W.w("findest du hier das, was es schon gibt.", course.language)
                     }
                     Button {
                         width: parent.width
-                        text: "Dort weiterlernen"
+                        text: W.w("Dort weiterlernen", course.language)
                         onClicked: {
                             course.startLesson(page.ergebnis.weiterId);
                             pageStack.pop();
@@ -190,7 +191,7 @@ Page {
                     width: parent.width - 2 * Style.pad
                     spacing: 6
                     Text {
-                        text: "Daran solltest du arbeiten"
+                        text: W.w("Daran solltest du arbeiten", course.language)
                         font.pixelSize: Style.headSize
                         color: Style.text
                     }
@@ -210,12 +211,12 @@ Page {
 
             Button {
                 width: parent.width
-                text: "Antworten ansehen"
+                text: W.w("Antworten ansehen", course.language)
                 onClicked: pageStack.push(Qt.resolvedUrl("ReviewPage.qml"))
             }
             Button {
                 width: parent.width
-                text: "Zur Übersicht"
+                text: W.w("Zur Übersicht", course.language)
                 onClicked: pageStack.pop()
             }
 

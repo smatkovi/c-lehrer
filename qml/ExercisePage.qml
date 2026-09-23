@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // The exercises, in rising order of effort: read and predict, fill a gap,
 // assemble from given lines, write it yourself. That order is not a matter
@@ -41,11 +42,11 @@ Page {
         if (a.leer)
             return "";
         if (a.art === "mc")
-            return "Richtig: " + a.optionen[a.antwort];
+            return W.w("Richtig: ", course.language) + a.optionen[a.antwort];
         if (a.art === "predict")
             return "Richtig wäre:\n" + (a.antwort === undefined ? "" : a.antwort);
         if (a.art === "blank")
-            return "Richtig: " + (a.antworten === undefined ? "" : a.antworten.join("   "));
+            return W.w("Richtig: ", course.language) + (a.antworten === undefined ? "" : a.antworten.join("   "));
         if (a.art === "parsons")
             return "Richtige Reihenfolge:\n"
                    + (a.zeilen === undefined ? "" : a.zeilen.join("\n"));
@@ -113,7 +114,7 @@ Page {
                 visible: page.aufgabe.leer
 
                 Text {
-                    text: "Lektion geschafft"
+                    text: W.w("Lektion geschafft", course.language)
                     font.pixelSize: Style.titleSize
                     color: Style.good
                 }
@@ -123,15 +124,15 @@ Page {
                     text: page.aufgabe.leer && page.aufgabe.beantwortet > 0
                           ? (page.aufgabe.richtigGesamt + " von "
                              + page.aufgabe.beantwortet + " Aufgaben auf Anhieb richtig. "
-                             + "Die Begriffe dieser Lektion kommen in ein paar Tagen "
-                             + "zur Auffrischung wieder.")
+                             + W.w("Die Begriffe dieser Lektion kommen in ein paar Tagen ", course.language)
+                             + W.w("zur Auffrischung wieder.", course.language))
                           : ""
                     font.pixelSize: Style.bodySize
                     color: Style.dim
                 }
                 Button {
                     width: parent.width
-                    text: "Weiter"
+                    text: W.w("Weiter", course.language)
                     onClicked: { pageStack.pop(); pageStack.pop(); }
                 }
             }
@@ -139,7 +140,7 @@ Page {
             // ---- Kopf -----------------------------------------------------
             Text {
                 visible: !page.aufgabe.leer
-                text: "Aufgabe " + (page.aufgabe.leer ? "" : page.aufgabe.nummer)
+                text: W.w("Aufgabe ", course.language) + (page.aufgabe.leer ? "" : page.aufgabe.nummer)
                       + " von " + (page.aufgabe.leer ? "" : page.aufgabe.gesamt)
                 font.pixelSize: Style.smallSize
                 color: Style.faint
@@ -225,7 +226,7 @@ Page {
                 visible: !page.aufgabe.leer && page.aufgabe.art === "predict"
 
                 Text {
-                    text: "Was schreibt das Programm?"
+                    text: W.w("Was schreibt das Programm?", course.language)
                     font.pixelSize: Style.smallSize
                     color: Style.dim
                 }
@@ -237,12 +238,12 @@ Page {
                     font.pixelSize: Style.codeSize
                     enabled: !page.aufgabe.geprueft
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                    placeholderText: "Deine Vorhersage"
+                    placeholderText: W.w("Deine Vorhersage", course.language)
                 }
                 Row {
                     spacing: Style.gap
                     Button {
-                        text: "Prüfen"
+                        text: W.w("Prüfen", course.language)
                         width: course.lesson.laeuft === true
                                ? spalte.width - 140 : spalte.width
                         enabled: !page.aufgabe.geprueft
@@ -252,7 +253,7 @@ Page {
                         // Bei C++ gibt es auf diesem Gerät nichts
                         // auszuführen; ein Knopf, hinter dem nichts läuft,
                         // wäre eine Zusage, die die App nicht hält.
-                        text: "Laufen"
+                        text: W.w("Laufen", course.language)
                         width: 128
                         visible: course.lesson.laeuft === true
                         enabled: !course.running
@@ -274,7 +275,7 @@ Page {
                         width: spalte.width - 150
                         enabled: !page.aufgabe.geprueft
                         inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        placeholderText: "Zahl"
+                        placeholderText: W.w("Zahl", course.language)
                     }
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
@@ -288,7 +289,7 @@ Page {
                 }
                 Button {
                     width: parent.width
-                    text: "Prüfen"
+                    text: W.w("Prüfen", course.language)
                     enabled: !page.aufgabe.geprueft && zahlenfeld.text !== ""
                     onClicked: course.answerNumber(
                                    parseFloat(zahlenfeld.text.replace(",", ".")))
@@ -298,7 +299,7 @@ Page {
                     wrapMode: Text.WordWrap
                     visible: page.aufgabe.geprueft && !page.aufgabe.richtig
                              && page.aufgabe.loesungZeigen
-                    text: "Richtig wäre etwa " + (page.aufgabe.antwort === undefined
+                    text: W.w("Richtig wäre etwa ", course.language) + (page.aufgabe.antwort === undefined
                                                   ? "" : page.aufgabe.antwort)
                           + " " + (page.aufgabe.einheit === undefined
                                    ? "" : page.aufgabe.einheit)
@@ -324,7 +325,7 @@ Page {
                         spacing: 8
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Lücke " + (index + 1)
+                            text: W.w("Lücke ", course.language) + (index + 1)
                             font.pixelSize: Style.smallSize
                             color: Style.dim
                             width: 90
@@ -344,7 +345,7 @@ Page {
                 }
                 Button {
                     width: parent.width
-                    text: "Prüfen"
+                    text: W.w("Prüfen", course.language)
                     enabled: !page.aufgabe.geprueft
                     onClicked: course.answerBlanks(luecken.felder)
                 }
@@ -357,7 +358,7 @@ Page {
                 visible: !page.aufgabe.leer && page.aufgabe.art === "parsons"
 
                 Text {
-                    text: "Deine Lösung – tippe eine Zeile an, um sie zurückzulegen"
+                    text: W.w("Deine Lösung – tippe eine Zeile an, um sie zurückzulegen", course.language)
                     font.pixelSize: Style.smallSize
                     color: Style.dim
                 }
@@ -404,7 +405,7 @@ Page {
                 }
 
                 Text {
-                    text: "Bausteine"
+                    text: W.w("Bausteine", course.language)
                     font.pixelSize: Style.smallSize
                     color: Style.dim
                 }
@@ -444,7 +445,7 @@ Page {
                 }
                 Button {
                     width: parent.width
-                    text: "Prüfen"
+                    text: W.w("Prüfen", course.language)
                     enabled: !page.aufgabe.geprueft && page.loesungsZeilen.length > 0
                     onClicked: course.answerParsons(page.loesungsZeilen)
                 }
@@ -505,7 +506,7 @@ Page {
                 Row {
                     spacing: Style.gap
                     Button {
-                        text: course.running ? "läuft …" : "Ausführen"
+                        text: course.running ? W.w("läuft …", course.language) : W.w("Ausführen", course.language)
                         width: spalte.width - 140
                         enabled: !course.running
                         onClicked: {
@@ -515,7 +516,7 @@ Page {
                         }
                     }
                     Button {
-                        text: "Stopp"
+                        text: W.w("Stopp", course.language)
                         width: 128
                         enabled: course.running
                         onClicked: course.stopRun()
@@ -524,7 +525,7 @@ Page {
 
                 Button {
                     width: parent.width
-                    text: "Als Antwort prüfen"
+                    text: W.w("Als Antwort prüfen", course.language)
                     enabled: !course.running && course.output !== ""
                     onClicked: course.checkRun()
                 }
@@ -534,7 +535,7 @@ Page {
                     wrapMode: Text.WordWrap
                     visible: page.aufgabe.erwartet !== undefined
                              && page.aufgabe.erwartet !== ""
-                    text: "Erwartet: " + (page.aufgabe.erwartet === undefined
+                    text: W.w("Erwartet: ", course.language) + (page.aufgabe.erwartet === undefined
                                           ? "" : page.aufgabe.erwartet)
                     font.family: Style.mono
                     font.pixelSize: Style.smallSize
@@ -562,7 +563,7 @@ Page {
                     spacing: 8
 
                     Text {
-                        text: page.aufgabe.richtig ? "Richtig" : "Noch nicht"
+                        text: page.aufgabe.richtig ? W.w("Richtig", course.language) : W.w("Noch nicht", course.language)
                         font.pixelSize: Style.headSize
                         color: page.aufgabe.richtig ? Style.good : Style.warn
                     }
@@ -597,7 +598,7 @@ Page {
                     // selbst sucht.
                     Button {
                         width: parent.width
-                        text: "Nochmal versuchen"
+                        text: W.w("Nochmal versuchen", course.language)
                         visible: !page.aufgabe.richtig && page.aufgabe.versuche < 2
                         onClicked: {
                             page.zuruecksetzen();
@@ -606,7 +607,7 @@ Page {
                     }
                     Button {
                         width: parent.width
-                        text: "Lösung anzeigen"
+                        text: W.w("Lösung anzeigen", course.language)
                         visible: !page.aufgabe.richtig && !page.aufgabe.loesungZeigen
                         onClicked: course.showSolution()
                     }
@@ -622,14 +623,14 @@ Page {
                 width: parent.width
                 visible: !page.aufgabe.leer && page.aufgabe.geprueft
                 text: page.aufgabe.nummer === page.aufgabe.gesamt
-                      ? "Lektion abschließen" : "Nächste Aufgabe"
+                      ? W.w("Lektion abschließen", course.language) : W.w("Nächste Aufgabe", course.language)
                 onClicked: page.weiter()
             }
 
             Button {
                 width: parent.width
                 visible: !page.aufgabe.leer && !page.aufgabe.geprueft
-                text: "Überspringen"
+                text: W.w("Überspringen", course.language)
                 onClicked: page.weiter()
             }
 

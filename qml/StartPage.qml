@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 Page {
     id: page
@@ -69,7 +70,7 @@ Page {
                     spacing: Style.gap
 
                     Text {
-                        text: "Einstufungstest"
+                        text: W.w("Einstufungstest", course.language)
                         font.pixelSize: Style.headSize
                         color: Style.text
                     }
@@ -78,13 +79,13 @@ Page {
                         wrapMode: Text.WordWrap
                         font.pixelSize: Style.bodySize
                         color: Style.dim
-                        text: "Etwa zehn Fragen, ein Fingertipp je Frage. "
-                              + "Danach geht der Kurs genau dort weiter, wo dein "
-                              + "Wissen aufhört -- nichts, was du schon kannst."
+                        text: W.w("Etwa zehn Fragen, ein Fingertipp je Frage. ", course.language)
+                              + W.w("Danach geht der Kurs genau dort weiter, wo dein ", course.language)
+                              + W.w("Wissen aufhört -- nichts, was du schon kannst.", course.language)
                     }
                     Button {
                         width: parent.width
-                        text: "Test beginnen"
+                        text: W.w("Test beginnen", course.language)
                         onClicked: {
                             course.startPlacement();
                             pageStack.push(Qt.resolvedUrl("PlacementPage.qml"));
@@ -109,7 +110,7 @@ Page {
                     Row {
                         spacing: Style.gap
                         Text {
-                            text: "Stufe " + course.level
+                            text: W.w("Stufe ", course.language) + course.level
                             font.pixelSize: Style.headSize
                             color: Style.accent
                         }
@@ -128,7 +129,7 @@ Page {
                         font.pixelSize: Style.bodySize
                         color: Style.text
                         visible: !page.weiter.leer
-                        text: "Weiter: " + page.weiter.kapitel + " – " + page.weiter.titel
+                        text: W.w("Weiter: ", course.language) + page.weiter.kapitel + " – " + page.weiter.titel
                     }
 
                     Text {
@@ -137,15 +138,15 @@ Page {
                         font.pixelSize: Style.smallSize
                         color: Style.warn
                         visible: page.zahlen.level > page.zahlen.hoechstesKapitel
-                        text: "Du liegst über dem, was bisher geschrieben ist "
-                              + "(bis Stufe " + page.zahlen.hoechstesKapitel
-                              + "). Die höheren Kapitel kommen noch – "
-                              + "unten steht der Plan."
+                        text: W.w("Du liegst über dem, was bisher geschrieben ist ", course.language)
+                              + W.w("(bis Stufe ", course.language) + page.zahlen.hoechstesKapitel
+                              + W.w("). Die höheren Kapitel kommen noch – ", course.language)
+                              + W.w("unten steht der Plan.", course.language)
                     }
 
                     Button {
                         width: parent.width
-                        text: "Weiterlernen"
+                        text: W.w("Weiterlernen", course.language)
                         visible: !page.weiter.leer
                         onClicked: {
                             course.startLesson(page.weiter.id);
@@ -160,8 +161,8 @@ Page {
                         color: Style.warn
                         visible: page.zahlen.faellig > 0
                         text: page.zahlen.faellig + " Lektion(en) sind zur "
-                              + "Auffrischung fällig – Wiederholen nach Abstand "
-                              + "ist der halbe Lernerfolg."
+                              + W.w("Auffrischung fällig – Wiederholen nach Abstand ", course.language)
+                              + W.w("ist der halbe Lernerfolg.", course.language)
                     }
                 }
             }
@@ -183,8 +184,8 @@ Page {
                         border.width: 1
                         Text {
                             anchors.centerIn: parent
-                            text: modelData === "de" ? "Deutsch"
-                                  : modelData === "en" ? "English" : modelData
+                            text: modelData === "de" ? W.w("Deutsch", course.language)
+                                  : modelData === "en" ? W.w("English", course.language) : modelData
                             font.pixelSize: Style.smallSize
                             color: modelData === course.language
                                    ? Style.bg : Style.text
@@ -202,8 +203,8 @@ Page {
                 text: {
                     var z = course.cardStats;
                     return z.faellig > 0
-                           ? "Karteikarten (" + z.faellig + " fällig)"
-                           : "Karteikarten";
+                           ? W.w("Karteikarten (", course.language) + z.faellig + " fällig)"
+                           : W.w("Karteikarten", course.language);
                 }
                 // Auch vor dem Einstufungstest: Karten sind gerade am
                 // Anfang nützlich, und wer nur abfragen will, soll nicht
@@ -214,27 +215,27 @@ Page {
 
             Button {
                 width: parent.width
-                text: "Kapitel"
+                text: W.w("Kapitel", course.language)
                 onClicked: pageStack.push(Qt.resolvedUrl("ChaptersPage.qml"))
             }
 
             Button {
                 width: parent.width
-                text: "Spielwiese: eigenen Code laufen lassen"
+                text: W.w("Spielwiese: eigenen Code laufen lassen", course.language)
                 visible: course.canRun
                 onClicked: pageStack.push(Qt.resolvedUrl("PlaygroundPage.qml"))
             }
 
             Button {
                 width: parent.width
-                text: "Einstufung ansehen"
+                text: W.w("Einstufung ansehen", course.language)
                 visible: !course.needsPlacement
                 onClicked: pageStack.push(Qt.resolvedUrl("ReviewPage.qml"))
             }
 
             Button {
                 width: parent.width
-                text: course.needsPlacement ? "" : "Neu einstufen"
+                text: course.needsPlacement ? "" : W.w("Neu einstufen", course.language)
                 visible: !course.needsPlacement
                 onClicked: {
                     course.startPlacement();
@@ -256,7 +257,7 @@ Page {
                     spacing: 6
 
                     Text {
-                        text: "Woran es noch hakt"
+                        text: W.w("Woran es noch hakt", course.language)
                         font.pixelSize: Style.headSize
                         color: Style.text
                     }

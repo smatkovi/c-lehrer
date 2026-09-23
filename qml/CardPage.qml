@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // Karteikarten mit wachsenden Abständen.
 //
@@ -44,7 +45,7 @@ Page {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: "Für jetzt durch"
+            text: W.w("Für jetzt durch", course.language)
             font.pixelSize: Style.titleSize
             color: Style.good
         }
@@ -59,7 +60,7 @@ Page {
         }
         Button {
             width: parent.width
-            text: "Zurück"
+            text: W.w("Zurück", course.language)
             onClicked: pageStack.pop()
         }
     }
@@ -93,7 +94,7 @@ Page {
                     horizontalAlignment: Text.AlignRight
                     text: page.karte.neu === true
                           ? "neu"
-                          : "noch " + (page.karte.offen === undefined ? 0 : page.karte.offen)
+                          : W.w("noch ", course.language) + (page.karte.offen === undefined ? 0 : page.karte.offen)
                     font.pixelSize: Style.smallSize
                     color: page.karte.neu === true ? Style.accent : Style.faint
                 }
@@ -168,7 +169,7 @@ Page {
                         width: spalte.width - 150
                         enabled: page.karte.geprueft !== true
                         inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        placeholderText: "Zahl"
+                        placeholderText: W.w("Zahl", course.language)
                     }
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
@@ -181,7 +182,7 @@ Page {
                 }
                 Button {
                     width: parent.width
-                    text: "Prüfen"
+                    text: W.w("Prüfen", course.language)
                     enabled: page.karte.geprueft !== true && zahl.text !== ""
                     onClicked: course.answerCardNumber(
                                    parseFloat(zahl.text.replace(",", ".")))
@@ -204,17 +205,17 @@ Page {
                     Row {
                         spacing: 10
                         Text {
-                            text: page.karte.richtig === true ? "Richtig" : "Daneben"
+                            text: page.karte.richtig === true ? W.w("Richtig", course.language) : W.w("Daneben", course.language)
                             font.pixelSize: Style.headSize
                             color: page.karte.richtig === true ? Style.good : Style.warn
                         }
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: page.karte.richtig === true
-                                  ? "wieder in " + (page.karte.tage === undefined
+                                  ? W.w("wieder in ", course.language) + (page.karte.tage === undefined
                                                     ? 1 : page.karte.tage)
                                     + " Tagen"
-                                  : "morgen wieder"
+                                  : W.w("morgen wieder", course.language)
                             font.pixelSize: Style.smallSize
                             color: Style.faint
                         }
@@ -223,7 +224,7 @@ Page {
                         width: parent.width
                         wrapMode: Text.WordWrap
                         visible: page.karte.art === "zahl" && page.karte.richtig !== true
-                        text: "Richtig wäre etwa " + (page.karte.antwort === undefined
+                        text: W.w("Richtig wäre etwa ", course.language) + (page.karte.antwort === undefined
                                                       ? "" : page.karte.antwort)
                         font.pixelSize: Style.bodySize
                         color: Style.good
@@ -244,14 +245,14 @@ Page {
             Button {
                 width: parent.width
                 visible: page.karte.geprueft === true
-                text: "Nächste Karte"
+                text: W.w("Nächste Karte", course.language)
                 onClicked: course.nextCard()
             }
 
             Button {
                 width: parent.width
                 visible: page.karte.geprueft !== true && page.karte.art === "mc"
-                text: "Überspringen"
+                text: W.w("Überspringen", course.language)
                 onClicked: course.nextCard()
             }
 

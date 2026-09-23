@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // A blank page with a compiler behind it. Half of learning to program is
 // trying something small just to see what happens, and that needs no
@@ -84,7 +85,7 @@ Page {
             spacing: Style.gap
 
             Text {
-                text: "Spielwiese"
+                text: W.w("Spielwiese", course.language)
                 font.pixelSize: Style.titleSize
                 color: Style.accent
             }
@@ -94,14 +95,14 @@ Page {
                 font.pixelSize: Style.smallSize
                 color: Style.dim
                 text: page.sprache === "python"
-                      ? "Zeilen, die mit plot beginnen, werden gezeichnet: "
-                        + "print('plot %f %f' % (t, x)) ergibt eine Kurve, "
-                        + "print('plot name %f %f' % ...) mehrere."
+                      ? W.w("Zeilen, die mit plot beginnen, werden gezeichnet: ", course.language)
+                        + W.w("print('plot %f %f' % (t, x)) ergibt eine Kurve, ", course.language)
+                        + W.w("print('plot name %f %f' % ...) mehrere.", course.language)
                       : page.sprache === "rust"
-                      ? "Zeilen, die mit plot beginnen, werden gezeichnet: "
+                      ? W.w("Zeilen, die mit plot beginnen, werden gezeichnet: ", course.language)
                         + "println!(\"plot {} {}\", t, x); ergibt eine Kurve, "
                         + "println!(\"plot name {} {}\", ...) mehrere."
-                      : "Zeilen, die mit plot beginnen, werden gezeichnet: "
+                      : W.w("Zeilen, die mit plot beginnen, werden gezeichnet: ", course.language)
                         + "printf(\"plot %f %f\\n\", t, x); ergibt eine Kurve, "
                         + "printf(\"plot name %f %f\\n\", ...) mehrere."
             }
@@ -183,13 +184,13 @@ Page {
             Row {
                 spacing: Style.gap
                 Button {
-                    text: course.running ? "läuft …" : "Ausführen"
+                    text: course.running ? W.w("läuft …", course.language) : W.w("Ausführen", course.language)
                     width: spalte.width - 140
                     enabled: !course.running
                     onClicked: course.runCode(editor.text, 30, page.sprache)
                 }
                 Button {
-                    text: "Stopp"
+                    text: W.w("Stopp", course.language)
                     width: 128
                     enabled: course.running
                     onClicked: course.stopRun()
@@ -200,7 +201,7 @@ Page {
 
             Button {
                 width: parent.width
-                text: "Zurück"
+                text: W.w("Zurück", course.language)
                 onClicked: pageStack.pop()
             }
             Item { width: 1; height: Style.pad }

@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import "style.js" as Style
+import "worte.js" as W
 
 // Every question of the placement test again, with the answer given, the
 // right one, and why. Asked for explicitly: a test you cannot look back at
@@ -37,7 +38,7 @@ Page {
                 y: Style.pad
                 width: liste.width - 2 * Style.pad
                 wrapMode: Text.WordWrap
-                text: "Einstufung: alle Antworten"
+                text: W.w("Einstufung: alle Antworten", course.language)
                 font.pixelSize: Style.titleSize
                 color: Style.accent
             }
@@ -99,14 +100,14 @@ Page {
                         width: parent.width
                         wrapMode: Text.WordWrap
                         visible: !modelData.korrekt
-                        text: "Deine Antwort: " + modelData.optionen[modelData.gewaehlt]
+                        text: W.w("Deine Antwort: ", course.language) + modelData.optionen[modelData.gewaehlt]
                         font.pixelSize: Style.smallSize
                         color: Style.bad
                     }
                     Text {
                         width: parent.width
                         wrapMode: Text.WordWrap
-                        text: "Richtig: " + modelData.optionen[modelData.richtig]
+                        text: W.w("Richtig: ", course.language) + modelData.optionen[modelData.richtig]
                         font.pixelSize: Style.smallSize
                         color: Style.good
                     }
@@ -129,7 +130,7 @@ Page {
                 x: Style.pad
                 y: Style.pad
                 width: liste.width - 2 * Style.pad
-                text: "Zurück"
+                text: W.w("Zurück", course.language)
                 onClicked: pageStack.pop()
             }
         }
