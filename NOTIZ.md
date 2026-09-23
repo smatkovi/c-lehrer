@@ -1,35 +1,32 @@
-C-Lehrer 3.0 — jedes Formelzeichen definiert, jede Formel hergeleitet
+C-Lehrer 3.1 — der Kurs auf Englisch, und jedes Codebeispiel erklärt
 
-Die Herleitungen von 2.9 waren unvollständig: Sie benutzten Formeln, die
-selbst nicht begründet waren. Eine Begründung, die eine unbegründete
-Formel verwendet, hat nichts erklärt, sondern nur verschoben.
+**Alle 411 Texte übersetzt.** Kapitel, Lektionen, Aufgaben, Begründungen,
+Einstufung, Herleitungen und die neuen Codeerklärungen. Der
+Sprachschalter erscheint, weil `sprachen` jetzt `["de", "en"]` ist.
 
-**Neu in jeder Herleitung:**
+Programmtext bleibt unverändert — ein C-Programm ist in beiden Sprachen
+dasselbe, und ein englischer Bezeichner in einer deutschen Aufgabe wäre
+nur verwirrend.
 
-* Ein Abschnitt **Formelzeichen** mit Bedeutung und Einheit jedes
-  Symbols, bevor es auftaucht.
-* Die Formeln **zweiter Stufe** ausgerechnet statt vorausgesetzt:
-  * die **Taylorreihe** selbst — warum aₙ = f⁽ⁿ⁾/n! ist, und was O(hⁿ)
-    bedeutet;
-  * `E = ½mv² + ½kx²` aus Arbeit = Kraft × Weg und dem Hookeschen Gesetz;
-  * die **Eulersche Formel** e^(ix) = cos x + i·sin x und daraus
-    e^(ix) + e^(−ix) = 2cos x;
-  * die **Halbwinkelformel** 1 − cos α = 2sin²(α/2);
-  * warum man in der von-Neumann-Analyse **eine einzelne Welle**
-    hineinschicken darf (Linearität und Fourier);
-  * der **Interpolationsfehler** der Sekante, aus dem der Trapezfehler
-    −h³/12·f'' folgt, und woher Simpsons Gewichte 1, 4, 2, 4, …, 1
-    kommen;
-  * die **modifizierte Gleichung** Schritt für Schritt, statt ihr
-    Ergebnis zu behaupten;
-  * die **Orthogonalität** der Helmholtz-Hodge-Zerlegung, aus der ihre
-    Eindeutigkeit folgt.
+**Neu: jedes der 24 Codebeispiele Zeile für Zeile erklärt** — auch die
+Zeilen, die man beim Lesen überspringt, weil sie selbstverständlich
+aussehen:
 
-**Und ein Fehler von 2.9 behoben:** Der Textdarsteller kannte keine
-Überschriften — `## Herleitung` stand wörtlich in der App. Jetzt nicht
-mehr, in beiden Oberflächen.
+* warum `xn` als Zwischenwert dasteht und was ohne ihn geschähe (es wäre
+  ein anderes Verfahren),
+* warum die Schleife bei 1 beginnt und bei n−2 endet,
+* warum zwei Felder nötig sind und nicht eines genügt,
+* warum `n / 2.0` den Punkt braucht,
+* was `sizeof` in `malloc` soll und was passiert, wenn man es vergisst,
+* warum `%e` statt `%f`, wenn die Werte Größenordnungen umspannen,
+* was der Unterstrich in `for _schritt` bedeutet,
+* warum bei der Instabilität nicht die Größe der Zahl zählt, sondern das
+  Sägezahnmuster,
+* warum `struct` in C einen Strichpunkt braucht und in Rust nicht.
+
+Jede Erklärung sagt auch, worauf beim Laufenlassen zu achten ist.
 
 **Pakete**
 
-* `c-lehrer_3.0_armel.deb` — Nokia N9 / N950, `dpkg -i`
-* `harbour-clehrer-1.2.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish OS
+* `c-lehrer_3.1_armel.deb` — Nokia N9 / N950, `dpkg -i`
+* `harbour-clehrer-1.3.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish
