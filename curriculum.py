@@ -26,6 +26,7 @@ people to trust an output nobody produced.
 from __future__ import unicode_literals
 
 from herleitungen import HERLEITUNGEN
+from codeerklaerungen import CODEERKLAERUNGEN
 
 
 def mc(q, options, answer, why, code=""):
@@ -75,7 +76,12 @@ def lesson(ident, title, concepts, text, example, exercises, output=""):
     h = HERLEITUNGEN.get(ident)
     if h:
         text = text + "\n\n" + h
+    # Die Erklaerung des Codebeispiels kommt als eigenes Feld. Sie an
+    # den Text zu haengen wuerde dessen Schluessel aendern und damit
+    # seine Uebersetzung entwerten; zusammengesetzt wird erst im
+    # Erzeuger, nachdem beide ihr Sprachpaar haben.
     return {"id": ident, "title": title, "concepts": concepts, "text": text,
+            "codeerklaerung": CODEERKLAERUNGEN.get(ident, ""),
             "example": example, "output": output, "exercises": exercises}
 
 

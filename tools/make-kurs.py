@@ -18,6 +18,12 @@ sys.path.insert(0, ROOT)
 
 import curriculum
 import placement
+from zweisprachig import durchgehen, einheit_paaren
+
+try:
+    from uebersetzung import EN
+except ImportError:      # noch keine Uebersetzung vorhanden
+    EN = {}
 
 
 def mischen(optionen, antwort, saat):
@@ -83,6 +89,7 @@ def main():
                 "titel": lesson["title"],
                 "begriffe": lesson["concepts"],
                 "text": lesson["text"],
+                "codeerklaerung": lesson.get("codeerklaerung", ""),
                 "beispiel": lesson["example"],
                 "ausgabe": lesson["output"],
                 "aufgaben": [aufgabe(t, lesson["id"] + "#" + str(i))
@@ -113,15 +120,58 @@ def main():
             "antwort": e_antwort, "warum": entry["why"],
         })
 
+    # Aus einsprachig zweisprachig machen. Fehlt eine Uebersetzung, sagt
+    # der Bau welche -- und liefert nicht stillschweigend Deutsch aus.
+    fehlt = []
+    chapters = durchgehen(chapters, EN, fehlt)
+    items = durchgehen(items, EN, fehlt)
+    themen = durchgehen(placement.TOPICS, EN, fehlt)
+    einheit_paaren(chapters, EN, fehlt)
+    einheit_paaren(items, EN, fehlt)
+
+    # Codeerklaerung an den Lektionstext haengen, in jeder Sprache
+    # einzeln. Erst hier, damit beide ihren eigenen Schluessel behalten.
+    for kap in chapters:
+        for lek in kap["lektionen"]:
+            erk = lek.pop("codeerklaerung", "")
+            if not erk:
+                continue
+            for code in ("de", "en"):
+                lek["text"][code] = (lek["text"][code] + "\n\n"
+                                     + erk[code])
+
+    vollstaendig = not fehlt
+    if fehlt:
+        einzig = sorted(set(fehlt), key=len)
+        pfad = os.path.join(ROOT, "data", "fehlt.json")
+        with open(pfad, "w", encoding="utf-8") as fh:
+            json.dump(einzig, fh, ensure_ascii=False, indent=1)
+        print("%d Uebersetzungen fehlen (%d verschiedene), Liste in "
+              "data/fehlt.json" % (len(fehlt), len(einzig)), file=sys.stderr)
+        if os.environ.get("UNVOLLSTAENDIG") != "1":
+            return 1
+        print("UNVOLLSTAENDIG=1: wird trotzdem geschrieben", file=sys.stderr)
+    else:
+        print("Zweisprachigkeit: vollstaendig (%d Texte)" % len(EN))
+        pfad = os.path.join(ROOT, "data", "fehlt.json")
+        if os.path.exists(pfad):
+            os.remove(pfad)
+
     out = {
-        "titel": "C-Lehrer",
-        "untertitel": ("C und C++ für Physik- und Strömungssimulation. "
-                       "Der Code, den du schreibst, läuft auf diesem Gerät "
-                       "wirklich."),
+        "titel": {"de": "C-Lehrer", "en": "C Teacher"},
+        "untertitel": {
+            "de": ("C und C++ für Physik- und Strömungssimulation. "
+                   "Der Code, den du schreibst, läuft auf diesem Gerät "
+                   "wirklich."),
+            "en": ("C and C++ for physics and fluid simulation. The code "
+                   "you write really runs on this device."),
+        },
         "ausfuehrbar": True,
+        # Englisch erst anbieten, wenn es auch vollstaendig ist.
+        "sprachen": ["de", "en"] if vollstaendig else ["de"],
         "kapitel": chapters,
         "plan": plan,
-        "einstufung": {"themen": placement.TOPICS, "fragen": items},
+        "einstufung": {"themen": themen, "fragen": items},
     }
     path = os.path.join(ROOT, "data", "kurs.json")
     with open(path, "w", encoding="utf-8") as fh:
