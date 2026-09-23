@@ -38,6 +38,11 @@ function rich(source) {
     if (!source)
         return "";
     var out = source.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Ueberschriften. Die Herleitungen sind lang genug, dass sie
+    // Zwischenstufen brauchen -- ohne diese Zeile stand "## Herleitung"
+    // woertlich im Text.
+    out = out.replace(/^##\s*(.+)$/gm,
+                      "<b style='color:" + accent + "'>$1</b>");
     out = out.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
     out = out.replace(/\*([^*\n]+)\*/g, "<i>$1</i>");
     out = out.replace(/`([^`]+)`/g,
