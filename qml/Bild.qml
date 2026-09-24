@@ -27,11 +27,24 @@ Rectangle {
     radius: 4
     clip: true
 
+    // Zeichnungen tragen ihre Beschriftung im Bild -- in der englischen
+    // Fassung muss also ein anderes Bild her. Es heisst <name>.en.png und
+    // liegt neben dem deutschen; gibt es keines, bleibt das deutsche stehen
+    // (besser ein Bild mit fremder Beschriftung als gar keines).
     Image {
+        id: bild
         anchors.fill: parent
         anchors.margins: 1
+        property bool zurueckgefallen: false
         source: rahmen.name === "" ? ""
-                : Qt.resolvedUrl("../bilder/" + rahmen.name + ".png")
+                : Qt.resolvedUrl("../bilder/" + rahmen.name
+                                 + (course.language !== "de" && !zurueckgefallen
+                                    ? "." + course.language : "") + ".png")
+        onStatusChanged: {
+            if (status === Image.Error && !zurueckgefallen)
+                zurueckgefallen = true;
+        }
+        onSourceChanged: if (course.language === "de") zurueckgefallen = false
         fillMode: Image.PreserveAspectFit
         smooth: true
         asynchronous: true
