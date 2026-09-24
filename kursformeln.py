@@ -56,7 +56,18 @@ ZEICHEN = {
 }
 
 
-def formel(code, tex, untertitel="", erklaerung="", zeichen=""):
+# Welche Skizze zu welcher Formel gehoert; gezeichnet von tools/skizzen.py.
+# Nur dort, wo ein Bild wirklich etwas erklaert -- eine Skizze zu
+# "10¹⁶ + 1" waere Zierat.
+SKIZZEN = {
+ "Ort, aus dem alten Zustand": "skizze-eulerschritt",
+ "Die Energie, die gleich bleiben sollte": "skizze-feder",
+ "Ein Zeitschritt der Diffusion": "skizze-stern",
+}
+
+
+def formel(code, tex, untertitel="", erklaerung="", zeichen="",
+           skizze=""):
     """Dieselbe Sache zweimal: wie sie im Programm steht und wie sie gesetzt
     aussieht.
 
@@ -75,7 +86,8 @@ def formel(code, tex, untertitel="", erklaerung="", zeichen=""):
     """
     return {"code": code, "tex": tex, "untertitel": untertitel,
             "erklaerung": erklaerung,
-            "zeichen": zeichen or ZEICHEN.get(untertitel, "")}
+            "zeichen": zeichen or ZEICHEN.get(untertitel, ""),
+            "skizze": skizze or SKIZZEN.get(untertitel, "")}
 
 KURSFORMELN = {
 

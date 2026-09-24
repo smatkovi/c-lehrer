@@ -89,6 +89,15 @@ Rectangle {
             color: Style.faint
         }
 
+        // Die Skizze zur Herleitung, wenn es eine gibt. Sie kommt gleich
+        // unter die Formel: Das Bild erklaert die Zeichen schneller als
+        // der Satz darunter. Bild.qml sucht sich die Sprachfassung selbst.
+        Bild {
+            width: parent.width
+            name: rahmen.formel === undefined || rahmen.formel.skizze === undefined
+                  ? "" : rahmen.formel.skizze
+        }
+
         // Was die Zeichen bedeuten. Der Kasten steht fuer sich: Wer beim
         // Durchblaettern zuerst auf ihn stoesst, findet sonst ein Zeichen,
         // das erst weiter oben im Text erklaert wird.
