@@ -76,7 +76,8 @@ Page {
                         }
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: modelData.thema + " · Stufe " + modelData.stufe
+                            text: modelData.thema + " "
+                                  + W.w("· Stufe ", course.language) + modelData.stufe
                             font.pixelSize: Style.smallSize
                             color: Style.faint
                         }

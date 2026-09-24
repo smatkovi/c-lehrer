@@ -177,6 +177,45 @@ QVariantMap Course::placementQuestion() const
     return out;
 }
 
+/* Die Antworten der Einstufung liegen zweisprachig im Speicher - Frage,
+   Begruendung, Auswahlmoeglichkeiten und der Name des Themas sind jeweils ein
+   Paar aus `de` und `en`.  Die Oberflaeche kann damit nichts anfangen; wer sie
+   roh weiterreicht, zeigt dem englischen Leser Deutsch (und QML im schlimmsten
+   Fall "[object Object]").  Also hier uebersetzen, erst beim Anzeigen - dann
+   stimmt es auch, wenn die Sprache nach dem Test gewechselt wird. */
+/* Der Plan steht zweisprachig im Kurs - wer ihn roh weiterreicht, zeigt dem
+   englischen Leser die deutschen Themen. */
+QVariantList Course::plan() const
+{
+    QVariantList out;
+    for (const QVariant &value : m_course->plan()) {
+        QVariantMap entry = value.toMap();
+        entry.insert(QLatin1String("titel"),
+                     m_course->text(entry.value(QLatin1String("titel"))));
+        out.append(entry);
+    }
+    return out;
+}
+
+QVariantList Course::placementReview() const
+{
+    QVariantList out;
+    for (const QVariant &value : m_engine.placementReview()) {
+        QVariantMap entry = value.toMap();
+        static const char *const texte[] = { "frage", "warum", "thema", "code" };
+        for (size_t i = 0; i < sizeof(texte) / sizeof(texte[0]); ++i) {
+            const QString key = QLatin1String(texte[i]);
+            if (entry.contains(key))
+                entry.insert(key, m_course->text(entry.value(key)));
+        }
+        if (entry.contains(QLatin1String("optionen")))
+            entry.insert(QLatin1String("optionen"),
+                         m_course->textList(entry.value(QLatin1String("optionen"))));
+        out.append(entry);
+    }
+    return out;
+}
+
 void Course::answerPlacement(int chosen)
 {
     if (!m_placement.isRunning())

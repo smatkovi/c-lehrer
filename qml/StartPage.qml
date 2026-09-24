@@ -116,8 +116,10 @@ Page {
                         }
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: page.zahlen.fertig + " von " + page.zahlen.gesamt
-                                  + " Lektionen"
+                            text: page.zahlen.fertig + " "
+                                  + W.w("von", course.language) + " "
+                                  + page.zahlen.gesamt + " "
+                                  + W.w("Lektionen", course.language)
                             font.pixelSize: Style.smallSize
                             color: Style.dim
                         }
@@ -160,7 +162,8 @@ Page {
                         font.pixelSize: Style.smallSize
                         color: Style.warn
                         visible: page.zahlen.faellig > 0
-                        text: page.zahlen.faellig + " Lektion(en) sind zur "
+                        text: page.zahlen.faellig
+                              + W.w(" Lektion(en) sind zur ", course.language)
                               + W.w("Auffrischung fällig – Wiederholen nach Abstand ", course.language)
                               + W.w("ist der halbe Lernerfolg.", course.language)
                     }

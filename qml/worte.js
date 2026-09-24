@@ -22,6 +22,7 @@ var EN = {
     "Kurs": "Course",
     "Kapitel": "Chapters",
     "Lektionen": "Lessons",
+    "von": "of",
     "Stufe": "Level",
     "Stufe ": "Level ",
     "· Stufe ": "· level ",
@@ -159,6 +160,7 @@ var EN = {
     "Aufgaben auf Anhieb richtig. Die Lektion kommt zur ":
         "exercises right first time. The lesson comes back for ",
     "Lektion(en) sind zur ": "lesson(s) are due for ",
+    " Lektion(en) sind zur ": " lesson(s) are due for ",
     "richtig. Weiter geht es ": "right. It carries on ",
     "Du liegst über dem, was bisher geschrieben ist ":
         "You are past what has been written so far ",
