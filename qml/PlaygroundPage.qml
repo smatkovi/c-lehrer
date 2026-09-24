@@ -40,6 +40,26 @@ Page {
                 + "    }\n}\n"
     }
 
+    // Gedeutet oder übersetzt? Das erklärt die Wartezeit, die man hier
+    // tatsächlich sieht: C und Rust laufen sofort los, Python braucht einen
+    // Augenblick zum Hochkommen, C++ fast eine Sekunde zum Übersetzen. Ohne
+    // einen Satz dazu sieht das wie eine Aussage über die Sprachen aus — und
+    // das wäre falsch.
+    property variant artZeile: {
+        "c": "C läuft hier gedeutet: picoc liest deinen Text und tut, was dort steht. Kein Übersetzen, also geht es sofort los.",
+        "cpp": "C++ wird übersetzt: g++ macht erst Maschinencode daraus und bindet ihn, dann läuft er. Das kostet die Sekunden vor der Ausgabe.",
+        "rust": "Rust läuft hier gedeutet: rrun liest deinen Text und tut, was dort steht. Kein Übersetzen, also geht es sofort los.",
+        "python": "Python wird gedeutet: CPython liest deinen Text. Der Deuter selbst muss aber erst hochkommen, und das sind die paar Zehntel vor der Ausgabe."
+    }
+
+    property string artErklaerung:
+        "**Gedeutet** heißt: ein Programm liest deinen Text und tut Zeile für Zeile, was dort steht. Es gibt nichts zu übersetzen, also fängt es sofort an — dafür ist der Deuter beim Laufen die ganze Zeit dabei und kostet Zeit an jeder Zeile.\n\n"
+      + "**Übersetzt** heißt: ein Übersetzer macht aus deinem Text einmal Maschinencode, den der Prozessor unmittelbar ausführt. Die Arbeit fällt **vorher** an, dafür läuft das Ergebnis danach schnell.\n\n"
+      + "Bei kurzen Programmen sieht man deshalb fast nur das Übersetzen und kaum das Laufen. Bei C++ kommt dazu, dass eine einzige Zeile wie `#include <iostream>` rund 37 000 Zeilen Schablonen hereinholt, die der Übersetzer jedes Mal neu liest — das ist der größte Teil der Wartezeit, nicht dein Programm.\n\n"
+      + "Und das sagt nichts darüber, welche Sprache schnell ist: C ist hier nur deshalb sofort da, weil diese App einen kleinen C-Deuter mitbringt. Richtig übersetztes C läuft schneller als alles andere hier — man wartet nur vorher."
+
+    property bool artOffen: false
+
     property variant zeichen: {
         "c": ["{", "}", "(", ")", ";", "*", "[", "]"],
         "cpp": ["{", "}", "(", ")", ";", "*", "[", "]"],
@@ -134,6 +154,44 @@ Page {
                             onClicked: page.sprachwechsel(modelData[0])
                         }
                     }
+                }
+            }
+
+            // ---- Gedeutet oder übersetzt? -------------------------------
+            Column {
+                width: parent.width
+                spacing: 6
+
+                Text {
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: Style.smallSize
+                    color: Style.accent
+                    text: W.w(page.artZeile[page.sprache], course.language)
+                }
+
+                Text {
+                    id: artSchalter
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: Style.smallSize
+                    color: Style.dim
+                    text: (page.artOffen ? "▾ " : "▸ ")
+                          + W.w("Was heißt gedeutet und übersetzt?", course.language)
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: page.artOffen = !page.artOffen
+                    }
+                }
+
+                Text {
+                    width: parent.width
+                    visible: page.artOffen
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.RichText
+                    font.pixelSize: Style.smallSize
+                    color: Style.dim
+                    text: Style.rich(W.w(page.artErklaerung, course.language))
                 }
             }
 

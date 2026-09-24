@@ -1,58 +1,35 @@
-C-Lehrer 3.1 — der Kurs auf Englisch, und jedes Codebeispiel erklärt
+C-Lehrer 3.8 — die Spielwiese sagt, was gedeutet und was übersetzt wird
 
-**Alle 411 Texte übersetzt.** Kapitel, Lektionen, Aufgaben, Begründungen,
-Einstufung, Herleitungen und die neuen Codeerklärungen. Der
-Sprachschalter erscheint, weil `sprachen` jetzt `["de", "en"]` ist.
+Wer in der Spielwiese dieselbe Kleinigkeit in allen vier Sprachen laufen lässt,
+merkt sofort: C und Rust sind augenblicklich da, Python braucht einen Moment,
+C++ ein paar Sekunden. Das sah aus wie eine Aussage über die Sprachen — und
+das wäre falsch.
 
-Programmtext bleibt unverändert — ein C-Programm ist in beiden Sprachen
-dasselbe, und ein englischer Bezeichner in einer deutschen Aufgabe wäre
-nur verwirrend.
+Unter der Sprachwahl steht jetzt je ein Satz dazu:
 
-**Neu: jedes der 24 Codebeispiele Zeile für Zeile erklärt** — auch die
-Zeilen, die man beim Lesen überspringt, weil sie selbstverständlich
-aussehen:
+* **C** läuft hier *gedeutet* (picoc) — kein Übersetzen, also sofort.
+* **Rust** ebenso, mit `rrun`.
+* **Python** wird gedeutet, aber CPython selbst muss erst hochkommen.
+* **C++** wird wirklich *übersetzt*: g++ macht Maschinencode und bindet ihn.
 
-* warum `xn` als Zwischenwert dasteht und was ohne ihn geschähe (es wäre
-  ein anderes Verfahren),
-* warum die Schleife bei 1 beginnt und bei n−2 endet,
-* warum zwei Felder nötig sind und nicht eines genügt,
-* warum `n / 2.0` den Punkt braucht,
-* was `sizeof` in `malloc` soll und was passiert, wenn man es vergisst,
-* warum `%e` statt `%f`, wenn die Werte Größenordnungen umspannen,
-* was der Unterstrich in `for _schritt` bedeutet,
-* warum bei der Instabilität nicht die Größe der Zahl zählt, sondern das
-  Sägezahnmuster,
-* warum `struct` in C einen Strichpunkt braucht und in Rust nicht.
+Aufgeklappt steht darunter, was der Unterschied ist: Ein Deuter liest den Text
+und tut Zeile für Zeile, was dort steht — nichts zu übersetzen, dafür ist er
+beim Laufen die ganze Zeit dabei. Ein Übersetzer macht einmal Maschinencode,
+den der Prozessor unmittelbar ausführt — die Arbeit fällt vorher an, das
+Ergebnis läuft danach schnell. Bei kurzen Programmen sieht man deshalb fast
+nur das Übersetzen.
 
-Jede Erklärung sagt auch, worauf beim Laufenlassen zu achten ist.
+Und bei C++ kommt dazu, dass eine einzige Zeile wie `#include <iostream>` rund
+37 000 Zeilen Schablonen hereinholt, die der Übersetzer jedes Mal neu liest.
+Das ist der größte Teil der Wartezeit, nicht das eigene Programm.
 
-**Neu: die Formeln stehen zweimal da** — einmal als die Zeile, die im
-Beispielprogramm wirklich vorkommt, und darunter dieselbe Sache gesetzt:
+Der Schlusssatz steht ausdrücklich da: Das sagt nichts darüber, welche Sprache
+schnell ist. C ist hier nur deshalb sofort da, weil die App einen kleinen
+C-Deuter mitbringt — richtig übersetztes C läuft schneller als alles andere
+hier, man wartet nur vorher.
 
-    xn = x + v * dt;          x_{n+1} = x_n + v_n Δt
+Zweisprachig wie der Rest der Oberfläche.
 
-Gesetzt wird beim Bauen mit `tools/formeln.py` (matplotlib.mathtext, also
-ein TeX-Setzer ohne TeX-Installation, Schrift Computer Modern). Das Gerät
-bekommt nur ein PNG zu sehen; auf Sailfish wird es vom Thema eingefärbt,
-damit es auch auf hellem Grund lesbar bleibt. Die Formeln selbst stehen in
-`kursformeln.py`, nach Lektion geordnet — zehn in sechs Lektionen:
-Euler, Velocity-Verlet, Diffusionsstern, Stabilitätsgrenze, Auf- und
-Abwind, Auslöschung.
+## Paket
 
-Warum als Bild und nicht als Text: QtQuick 1.1 und Silica können beide
-Rich Text, aber keinen Bruchstrich, keine Wurzel und kein Summenzeichen
-mit Grenzen. Ein Setzer auf dem Gerät (KaTeX in einer WebView) ginge — die
-N950 hat QtWebKit —, kostet aber eine Browsermaschine je Formel und bringt
-nichts ein, weil die Formeln beim Bauen schon feststehen.
-
-**Pakete**
-
-Zu jeder Formel steht jetzt auch, **warum** sie so aussieht: woher der
-Faktor kommt, was das fehlende Glied bedeutet, wo die Näherung aufhört zu
-gelten. Die Erklärung ist der Teil, den man sonst im Lehrbuch nachschlägt
-und dabei den Faden verliert.
-
-**Pakete**
-
-* `c-lehrer_3.3_armel.deb` — Nokia N9 / N950, `dpkg -i`
-* `harbour-clehrer-1.5.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish
+**N9 / N950:** `dpkg -i c-lehrer_3.8_armel.deb`
