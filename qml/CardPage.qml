@@ -239,6 +239,25 @@ Page {
                         lineHeight: 1.25
                         lineHeightMode: Text.ProportionalHeight
                     }
+                    // Die Herleitung gehoert auf die Rueckseite der Karte.
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        visible: page.karte.herleitung !== undefined
+                                 && page.karte.herleitung !== ""
+                        text: page.karte.herleitung === undefined
+                              ? "" : Style.rich(page.karte.herleitung)
+                        textFormat: Text.RichText
+                        font.pixelSize: Style.bodySize
+                        color: Style.text
+                        lineHeight: 1.25
+                        lineHeightMode: Text.ProportionalHeight
+                    }
+                    Bild {
+                        width: parent.width
+                        name: page.karte.skizze === undefined
+                              ? "" : page.karte.skizze
+                    }
                 }
             }
 

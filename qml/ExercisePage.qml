@@ -577,6 +577,32 @@ Page {
                         lineHeight: 1.25
                         lineHeightMode: Text.ProportionalHeight
                     }
+                    // ---- Die Herleitung ------------------------------------
+                    // Steht in der Loesung und nur dort: Eine Formel, die man
+                    // nur auswendig kann, haelt genau so lange, wie die Lage
+                    // zum Lehrbuch passt. Vor der Antwort waere sie die
+                    // Antwort.
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        visible: !page.aufgabe.leer
+                                 && page.aufgabe.herleitung !== undefined
+                                 && page.aufgabe.herleitung !== ""
+                        text: (page.aufgabe.leer
+                               || page.aufgabe.herleitung === undefined)
+                              ? "" : Style.rich(page.aufgabe.herleitung)
+                        textFormat: Text.RichText
+                        font.pixelSize: Style.bodySize
+                        color: Style.text
+                        lineHeight: 1.25
+                        lineHeightMode: Text.ProportionalHeight
+                    }
+                    Bild {
+                        width: parent.width
+                        name: (page.aufgabe.leer
+                               || page.aufgabe.skizze === undefined)
+                              ? "" : page.aufgabe.skizze
+                    }
                     Text {
                         width: parent.width
                         wrapMode: Text.WordWrap
