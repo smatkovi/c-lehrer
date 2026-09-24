@@ -37,14 +37,35 @@ Rectangle {
         width: parent.width - 24
         spacing: 6
 
+        // Die Codezeile darf nicht abgeschnitten werden: Eine halbe Zeile
+        // Programm ist schlimmer als gar keine, denn man sieht nicht, dass
+        // etwas fehlt, sondern liest eine falsche. Sie wird deshalb so weit
+        // verkleinert, bis sie hineinpasst -- und erst wenn selbst das nicht
+        // reicht, umgebrochen.
+        //
+        // Gemessen wird an einer zweiten, unsichtbaren Zeile in fester
+        // Groesse. Die Schriftgroesse an der eigenen paintedWidth zu
+        // bemessen waere eine Bindungsschleife.
         Text {
-            width: parent.width
+            id: messung
+            visible: false
             text: rahmen.formel === undefined ? "" : rahmen.formel.code
             font.family: Style.mono
             font.pixelSize: Style.codeSize
+            textFormat: Text.PlainText
+        }
+
+        Text {
+            width: parent.width
+            text: messung.text
+            font.family: Style.mono
+            font.pixelSize: messung.paintedWidth > parent.width
+                            ? Math.max(11, Math.floor(Style.codeSize * parent.width
+                                                      / messung.paintedWidth))
+                            : Style.codeSize
             color: Style.dim
             textFormat: Text.PlainText
-            elide: Text.ElideRight
+            wrapMode: Text.WrapAnywhere
         }
 
         Image {
@@ -66,6 +87,21 @@ Rectangle {
             wrapMode: Text.WordWrap
             font.pixelSize: Style.smallSize
             color: Style.faint
+        }
+
+        // Warum das dasteht. Die halbe Zeile darueber sagt, was es ist --
+        // hier steht, woher der Faktor kommt und wo er aufhoert zu gelten.
+        Text {
+            width: parent.width
+            visible: text !== ""
+            text: rahmen.formel === undefined
+                  ? "" : Style.rich(rahmen.formel.erklaerung || "")
+            textFormat: Text.RichText
+            wrapMode: Text.WordWrap
+            font.pixelSize: Style.smallSize
+            color: Style.dim
+            lineHeight: 1.25
+            lineHeightMode: Text.ProportionalHeight
         }
     }
 }

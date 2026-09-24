@@ -640,4 +640,34 @@ With `printf` every type has its placeholder: `%d` for `int`, `%f` for `double`.
 'Was double hier wirklich rechnet':
 'What double actually computes here',
 
+'Rechts steht das alte `v`, nicht das neue. Das ist gemeint mit **explizit**: Alles auf der rechten Seite ist der Zustand vom Anfang des Schritts. Wer hier schon das neue `v` einsetzt, hat ein anderes Verfahren programmiert -- ein besseres sogar, aber eben nicht Euler.':
+'On the right stands the old `v`, not the new one. That is what **explicit** means: everything on the right-hand side is the state from the start of the step. Put the new `v` in here and you have programmed a different method -- a better one, in fact, but not Euler.',
+
+'Der ganze Schritt wird mit der Beschleunigung vom **Anfang** gerechnet. Bei einer Feder zeigt sie zur Ruhelage und ist für den Bogen, den der Punkt tatsächlich durchläuft, zu klein. Jeder Schritt setzt ihn ein Stückchen zu weit außen ab, und das summiert sich, statt sich herauszumitteln.':
+'The whole step is computed with the acceleration from the **start**. With a spring it points towards the rest position and is too small for the arc the point actually travels. Every step sets it down a little too far out, and that accumulates instead of averaging out.',
+
+'`½v²` ist die Bewegungsenergie (mit m = 1). `½x²` ist die Spannenergie der Feder: Die Federkraft wächst linear mit der Auslenkung, `F = k·x`, ist am Anfang also null und erst am Ende `k·x` -- im Mittel `½k·x`. Arbeit ist mittlere Kraft mal Weg, also `½k·x²`, die Dreiecksfläche unter der Geraden `F(x)`. Mit k = 1 bleibt `½x²`. Die Probe, dass es die richtige Größe ist: `dE/dt = v·v̇ + x·ẋ = v·(−x) + x·v = 0`.':
+'`½v²` is the kinetic energy (with m = 1). `½x²` is the strain energy of the spring: the spring force grows linearly with the displacement, `F = k·x`, so it is zero at the start and only `k·x` at the end -- on average `½k·x`. Work is average force times distance, hence `½k·x²`, the area of the triangle under the line `F(x)`. With k = 1, `½x²` remains. The check that it is the right quantity: `dE/dt = v·v̇ + x·ẋ = v·(−x) + x·v = 0`.',
+
+'Das ist ein Glied mehr aus der Taylorreihe als bei Euler, und es ist genau der Weg, den eine gleichmäßige Beschleunigung in der Zeit `dt` zurücklegt: `s = ½a·t²`. Deshalb ist der Ort hier von zweiter Ordnung genau, und deshalb braucht Verlet auch kein `xn` als Zwischenwert -- `x` wird fertig gerechnet, bevor `a` sich ändert.':
+'That is one term more of the Taylor series than Euler takes, and it is exactly the distance a constant acceleration covers in the time `dt`: `s = ½a·t²`. That is why the position is second-order accurate here, and why Verlet needs no `xn` as an intermediate -- `x` is finished before `a` changes.',
+
+'Statt der Beschleunigung vom Anfang (Euler) wird der Mittelwert aus Anfang und Ende genommen -- die Trapezregel statt des Rechtecks. Das ist der ganze Unterschied, und er genügt: Der Energiefehler wächst nicht mehr, er schwankt nur noch um einen festen Wert.':
+'Instead of the acceleration at the start (Euler) the mean of start and end is taken -- the trapezoid rule instead of the rectangle. That is the whole difference, and it suffices: the energy error no longer grows, it only swings about a fixed value.',
+
+"Die Klammer ist die **zweite Ableitung** in Differenzenform: Addiert man die Taylorreihen des linken und des rechten Nachbarn, heben sich die ersten Ableitungen weg und übrig bleibt `u₋ − 2u₀ + u₊ ≈ h²·u''`. Sie misst also die Krümmung: Liegt ein Punkt unter dem Mittel seiner Nachbarn, steigt er. Genau das tut Wärme.":
+"The bracket is the **second derivative** in difference form: add the Taylor series of the left and the right neighbour and the first derivatives cancel, leaving `u₋ − 2u₀ + u₊ ≈ h²·u''`. So it measures the curvature: if a point lies below the mean of its neighbours, it rises. That is exactly what heat does.",
+
+'Setzt man eine einzelne Welle in den Stern ein, wird sie je Schritt mit `g = 1 − 4r·sin²(kh/2)` multipliziert. Am schlimmsten ist die kürzeste Welle, die von Zelle zu Zelle springt: dort ist `g = 1 − 4r`, und `|g| ≤ 1` verlangt `r ≤ ½`. Darüber verdoppelt sich der Zickzack mit jedem Schritt. Halbes `h` heißt deshalb ein Viertel `dt`.':
+'Put a single wave into the stencil and it is multiplied by `g = 1 − 4r·sin²(kh/2)` at every step. The worst case is the shortest wave, jumping from cell to cell: there `g = 1 − 4r`, and `|g| ≤ 1` demands `r ≤ ½`. Above that the zigzag doubles with every step. Halving `h` therefore means quartering `dt`.',
+
+'Die Information kommt mit der Strömung, also von links, wenn `v > 0` ist -- und genau von dort holt der Schritt seinen Wert. Das Verfahren schaut dorthin, wo die Physik herkommt. Es ist nur erster Ordnung und verschmiert die Kante, aber es erfindet keine Werte, die nie da waren.':
+'The information arrives with the flow, so from the left when `v > 0` -- and that is exactly where the step takes its value from. The method looks to where the physics comes from. It is only first order and smears the edge, but it never invents values that were never there.',
+
+'Der zentrale Differenzenquotient ist genauer (zweiter Ordnung), aber der eigene Wert `z_i` kommt in der Ableitung gar nicht vor -- es gibt nichts, was ihn festhält. Die Zickzack-Welle wird dadurch verstärkt statt gedämpft, und das Ergebnis schwingt, bevor es explodiert. Genauigkeit und Stabilität sind zwei verschiedene Dinge.':
+"The central difference quotient is more accurate (second order), but the cell's own value `z_i` does not appear in the derivative at all -- there is nothing holding it. The zigzag wave is amplified instead of damped, and the result swings before it explodes. Accuracy and stability are two different things.",
+
+'`double` hat 53 Bit Mantisse, also knapp 16 Dezimalstellen. Bei der Größenordnung 10¹⁶ ist der Abstand zweier benachbarter darstellbarer Zahlen schon 2 -- eine 1 dazuzuzählen trifft gar keine neue Zahl. Das Ergebnis ist nicht gerundet, es ist unverändert. Deshalb summiert man lange Reihen vom kleinsten Glied her.':
+'`double` has 53 bits of mantissa, that is barely 16 decimal digits. At the order of 10¹⁶ the distance between two neighbouring representable numbers is already 2 -- adding 1 reaches no new number at all. The result is not rounded, it is unchanged. That is why long series are summed starting from the smallest term.',
+
 })

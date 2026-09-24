@@ -47,5 +47,12 @@ nichts ein, weil die Formeln beim Bauen schon feststehen.
 
 **Pakete**
 
-* `c-lehrer_3.2_armel.deb` — Nokia N9 / N950, `dpkg -i`
-* `harbour-clehrer-1.4.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish
+Zu jeder Formel steht jetzt auch, **warum** sie so aussieht: woher der
+Faktor kommt, was das fehlende Glied bedeutet, wo die Näherung aufhört zu
+gelten. Die Erklärung ist der Teil, den man sonst im Lehrbuch nachschlägt
+und dabei den Faden verliert.
+
+**Pakete**
+
+* `c-lehrer_3.3_armel.deb` — Nokia N9 / N950, `dpkg -i`
+* `harbour-clehrer-1.5.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish
