@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 
 from herleitungen import HERLEITUNGEN
 from codeerklaerungen import CODEERKLAERUNGEN
+from kursformeln import KURSFORMELN
 
 
 def mc(q, options, answer, why, code=""):
@@ -69,7 +70,8 @@ def code(q, starter, expect, solution, why, plot=False, seconds=10):
             "seconds": seconds}
 
 
-def lesson(ident, title, concepts, text, example, exercises, output=""):
+def lesson(ident, title, concepts, text, example, exercises, output="",
+           formeln=None):
     # Die Herleitung haengt hinten an. Sie steht in herleitungen.py, damit
     # alle Formeln des Kurses an einer Stelle zu ueberblicken sind: Was
     # dort fehlt, hat im Kurs keine Begruendung.
@@ -82,7 +84,8 @@ def lesson(ident, title, concepts, text, example, exercises, output=""):
     # Erzeuger, nachdem beide ihr Sprachpaar haben.
     return {"id": ident, "title": title, "concepts": concepts, "text": text,
             "codeerklaerung": CODEERKLAERUNGEN.get(ident, ""),
-            "example": example, "output": output, "exercises": exercises}
+            "example": example, "output": output, "exercises": exercises,
+            "formeln": formeln or KURSFORMELN.get(ident, [])}
 
 
 def chapter(ident, title, level, lang, blurb, lessons):

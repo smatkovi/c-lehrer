@@ -1,0 +1,52 @@
+{
+ "formel-06bf6727": {
+  "breite": 356,
+  "hoehe": 39,
+  "tex": "$a_i^{\\,n+1} = a_i^{\\,n} - C\\,\\left(a_i^{\\,n} - a_{i-1}^{\\,n}\\right)$"
+ },
+ "formel-30546e69": {
+  "breite": 366,
+  "hoehe": 43,
+  "tex": "$z_i^{\\,n+1} = z_i^{\\,n} - \\frac{C}{2}\\left(z_{i+1}^{\\,n} - z_{i-1}^{\\,n}\\right)$"
+ },
+ "formel-3a4aa86b": {
+  "breite": 466,
+  "hoehe": 40,
+  "tex": "$u_i^{\\,n+1} = u_i^{\\,n} + r\\,\\left(u_{i-1}^{\\,n} - 2u_i^{\\,n} + u_{i+1}^{\\,n}\\right)$"
+ },
+ "formel-4b036e48": {
+  "breite": 302,
+  "hoehe": 45,
+  "tex": "$v_{n+1} = v_n + \\frac{a_n + a_{n+1}}{2}\\,\\Delta t$"
+ },
+ "formel-9335920e": {
+  "breite": 195,
+  "hoehe": 33,
+  "tex": "$10^{16} + 1 = 10^{16}$"
+ },
+ "formel-bd62ff6d": {
+  "breite": 237,
+  "hoehe": 33,
+  "tex": "$v_{n+1} = v_n + a_n\\,\\Delta t$"
+ },
+ "formel-c33cca23": {
+  "breite": 376,
+  "hoehe": 42,
+  "tex": "$x_{n+1} = x_n + v_n\\,\\Delta t + \\frac{1}{2}a_n\\,\\Delta t^{2}$"
+ },
+ "formel-f004616a": {
+  "breite": 182,
+  "hoehe": 42,
+  "tex": "$E = \\frac{1}{2}v^{2} + \\frac{1}{2}x^{2}$"
+ },
+ "formel-f1cc1b9c": {
+  "breite": 147,
+  "hoehe": 48,
+  "tex": "$r = \\frac{D\\,\\Delta t}{\\Delta x^{2}} \\leq \\frac{1}{2}$"
+ },
+ "formel-f63bcb86": {
+  "breite": 241,
+  "hoehe": 33,
+  "tex": "$x_{n+1} = x_n + v_n\\,\\Delta t$"
+ }
+}

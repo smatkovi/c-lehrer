@@ -70,6 +70,18 @@ Page {
                       ? "" : page.lektion.bild
             }
 
+            // Die Formeln der Lektion, jede zweimal: als Codezeile und
+            // gesetzt. Sie stehen vor dem Beispiel, damit man die Zeilen
+            // gleich darunter wiederfindet.
+            Repeater {
+                model: page.lektion.leer || page.lektion.formeln === undefined
+                       ? [] : page.lektion.formeln
+                Formel {
+                    width: spalte.width
+                    formel: modelData
+                }
+            }
+
             Text {
                 text: W.w("Beispiel", course.language)
                 font.pixelSize: Style.headSize

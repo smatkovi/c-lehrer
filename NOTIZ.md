@@ -26,7 +26,26 @@ aussehen:
 
 Jede Erklärung sagt auch, worauf beim Laufenlassen zu achten ist.
 
+**Neu: die Formeln stehen zweimal da** — einmal als die Zeile, die im
+Beispielprogramm wirklich vorkommt, und darunter dieselbe Sache gesetzt:
+
+    xn = x + v * dt;          x_{n+1} = x_n + v_n Δt
+
+Gesetzt wird beim Bauen mit `tools/formeln.py` (matplotlib.mathtext, also
+ein TeX-Setzer ohne TeX-Installation, Schrift Computer Modern). Das Gerät
+bekommt nur ein PNG zu sehen; auf Sailfish wird es vom Thema eingefärbt,
+damit es auch auf hellem Grund lesbar bleibt. Die Formeln selbst stehen in
+`kursformeln.py`, nach Lektion geordnet — zehn in sechs Lektionen:
+Euler, Velocity-Verlet, Diffusionsstern, Stabilitätsgrenze, Auf- und
+Abwind, Auslöschung.
+
+Warum als Bild und nicht als Text: QtQuick 1.1 und Silica können beide
+Rich Text, aber keinen Bruchstrich, keine Wurzel und kein Summenzeichen
+mit Grenzen. Ein Setzer auf dem Gerät (KaTeX in einer WebView) ginge — die
+N950 hat QtWebKit —, kostet aber eine Browsermaschine je Formel und bringt
+nichts ein, weil die Formeln beim Bauen schon feststehen.
+
 **Pakete**
 
-* `c-lehrer_3.1_armel.deb` — Nokia N9 / N950, `dpkg -i`
-* `harbour-clehrer-1.3.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish
+* `c-lehrer_3.2_armel.deb` — Nokia N9 / N950, `dpkg -i`
+* `harbour-clehrer-1.4.0-1.aarch64.rpm` und `…armv7hl.rpm` — Sailfish

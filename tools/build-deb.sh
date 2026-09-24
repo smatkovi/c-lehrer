@@ -20,7 +20,7 @@ STAGE=build/stage
 rm -rf "$STAGE"
 
 mkdir -p "$STAGE/opt/c-lehrer/bin" "$STAGE/opt/c-lehrer/qml" \
-         "$STAGE/opt/c-lehrer/data" "$STAGE/usr/share/applications" \
+         "$STAGE/opt/c-lehrer/data" "$STAGE/opt/c-lehrer/bilder" "$STAGE/usr/share/applications" \
          "$STAGE/usr/share/icons/hicolor/80x80/apps" "$STAGE/DEBIAN"
 
 [ -x build/c-lehrer ] || { echo "build/c-lehrer fehlt -- erst tools/build.sh" >&2; exit 1; }
@@ -32,6 +32,9 @@ cp bin/crun "$STAGE/opt/c-lehrer/bin/"
 cp bin/rrun "$STAGE/opt/c-lehrer/bin/"
 cp qml/*.qml qml/*.js "$STAGE/opt/c-lehrer/qml/"
 cp data/kurs.json "$STAGE/opt/c-lehrer/data/"
+# Die gesetzten Formeln. Ohne sie bleibt die Codezeile stehen und nur das
+# Bild fehlt -- aber dann war tools/formeln.py nicht gelaufen.
+cp bilder/*.png "$STAGE/opt/c-lehrer/bilder/"
 cp c-lehrer.desktop "$STAGE/usr/share/applications/"
 cp icons/icon-80.png "$STAGE/usr/share/icons/hicolor/80x80/apps/c-lehrer.png"
 chmod 755 "$STAGE/opt/c-lehrer/bin/c-lehrer" "$STAGE/opt/c-lehrer/bin/crun" \

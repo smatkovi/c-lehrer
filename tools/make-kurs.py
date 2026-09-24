@@ -17,6 +17,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 
 import curriculum
+import formeln as formelsatz
 import placement
 from zweisprachig import durchgehen, einheit_paaren
 
@@ -92,6 +93,7 @@ def main():
                 "codeerklaerung": lesson.get("codeerklaerung", ""),
                 "beispiel": lesson["example"],
                 "ausgabe": lesson["output"],
+                "formeln": [dict(f) for f in lesson.get("formeln", [])],
                 "aufgaben": [aufgabe(t, lesson["id"] + "#" + str(i))
                              for i, t in enumerate(lesson["exercises"])],
             })
@@ -139,6 +141,29 @@ def main():
             for code in ("de", "en"):
                 lek["text"][code] = (lek["text"][code] + "\n\n"
                                      + erk[code])
+
+    # Zu jeder Formel das Bild dazulegen, das tools/formeln.py gesetzt hat.
+    # Fehlt eines, bleibt die Codezeile stehen und nur das Gesetzte fehlt --
+    # der Bau soll daran nicht scheitern, denn matplotlib gibt es nur auf
+    # dem Baurechner.
+    bilder = formelsatz.gesetzte()
+    ohne_bild = []
+    for kap in chapters:
+        for lek in kap["lektionen"]:
+            for eintrag in lek.get("formeln", []):
+                name = formelsatz.kennung(eintrag["tex"])
+                daten = bilder.get(name)
+                if not daten:
+                    ohne_bild.append(eintrag["tex"])
+                    continue
+                eintrag["bild"] = name
+                eintrag["breite"] = daten["breite"]
+                eintrag["hoehe"] = daten["hoehe"]
+    if ohne_bild:
+        print("%d Formeln ohne Bild -- tools/formeln.py auf dem Baurechner "
+              "laufen lassen:" % len(ohne_bild), file=sys.stderr)
+        for tex in ohne_bild:
+            print("   " + tex, file=sys.stderr)
 
     vollstaendig = not fehlt
     if fehlt:
