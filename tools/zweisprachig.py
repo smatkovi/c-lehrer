@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 
 # Felder, deren Inhalt gelesen wird.
 TEXTFELDER = ("titel", "text", "q", "warum", "frage", "untertitel",
-              "codeerklaerung", "erklaerung")
+              "codeerklaerung", "erklaerung", "zeichen")
 # Felder, die eine Liste von Texten tragen.
 LISTENFELDER = ("optionen", "options")
 

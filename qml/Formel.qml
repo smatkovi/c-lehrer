@@ -89,6 +89,20 @@ Rectangle {
             color: Style.faint
         }
 
+        // Was die Zeichen bedeuten. Der Kasten steht fuer sich: Wer beim
+        // Durchblaettern zuerst auf ihn stoesst, findet sonst ein Zeichen,
+        // das erst weiter oben im Text erklaert wird.
+        Text {
+            width: parent.width
+            visible: text !== ""
+            text: rahmen.formel === undefined
+                  ? "" : Style.rich(rahmen.formel.zeichen || "")
+            textFormat: Text.RichText
+            wrapMode: Text.WordWrap
+            font.pixelSize: Style.smallSize
+            color: Style.faint
+        }
+
         // Warum das dasteht. Die halbe Zeile darueber sagt, was es ist --
         // hier steht, woher der Faktor kommt und wo er aufhoert zu gelten.
         Text {

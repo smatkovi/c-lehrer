@@ -17,7 +17,46 @@ bekommt nur PNG-Dateien zu sehen.
 """
 from __future__ import unicode_literals
 
-def formel(code, tex, untertitel="", erklaerung=""):
+# Was die Zeichen bedeuten, je Formel. Sie stehen hier und nicht in den
+# Aufrufen, damit die Formeln lesbar bleiben; gefunden wird ueber den
+# Untertitel. Die Regel dahinter ist dieselbe wie bei den Herleitungen:
+# Jedes Zeichen wird definiert, mit Bedeutung und Einheit, bevor es
+# auftaucht -- und der Formelkasten steht fuer sich, wer ihn beim
+# Durchblaettern zuerst sieht, hat den Text darueber noch nicht gelesen.
+ZEICHEN = {
+ "Ort, aus dem alten Zustand":
+   "`x` Ort, m. `v` Geschwindigkeit, m/s. `dt` Zeitschritt, s. Der Index "
+   "`n` zählt die Schritte.",
+ "Geschwindigkeit, ebenfalls aus dem alten":
+   "`v` Geschwindigkeit, m/s. `a` Beschleunigung, m/s². `dt` Zeitschritt, s.",
+ "Die Energie, die gleich bleiben sollte":
+   "`E` Energie, J. `v` Geschwindigkeit, m/s. `x` Auslenkung, m. Masse und "
+   "Federkonstante sind beide 1 gesetzt.",
+ "Der Ort bekommt das halbe Beschleunigungsglied":
+   "`x` Ort, m. `v` Geschwindigkeit, m/s. `a` Beschleunigung, m/s². "
+   "`dt` Zeitschritt, s.",
+ "Die Geschwindigkeit mittelt alte und neue Beschleunigung":
+   "`a_n` Beschleunigung am Anfang des Schritts, `a_(n+1)` am Ende, beide "
+   "m/s². `dt` Zeitschritt, s.",
+ "Was double hier wirklich rechnet":
+   "`double` ist der C-Gleitkommatyp mit 53 Bit Mantisse, also knapp 16 "
+   "Dezimalstellen.",
+ "Ein Zeitschritt der Diffusion":
+   "`u_i^n` Wert am Gitterpunkt `i` nach `n` Zeitschritten. `r = D·dt/h²`, "
+   "dimensionslos. `h` Gitterabstand, m.",
+ "Was r bedeutet, und wo es aufhört zu gehen":
+   "`r` dimensionslos. `D` Diffusionskonstante, m²/s. `dt` Zeitschritt, s. "
+   "`Δx` Gitterabstand, m.",
+ "Stromaufwärts: die Zelle, aus der es kommt":
+   "`a_i^n` transportierte Größe am Punkt `i` nach `n` Zeitschritten. "
+   "`C = v·dt/h` Courant-Zahl, dimensionslos.",
+ "Zentral: beide Nachbarn, und deshalb instabil":
+   "`z_i^n` dieselbe Größe im zentralen Verfahren. `C` Courant-Zahl, "
+   "dimensionslos.",
+}
+
+
+def formel(code, tex, untertitel="", erklaerung="", zeichen=""):
     """Dieselbe Sache zweimal: wie sie im Programm steht und wie sie gesetzt
     aussieht.
 
@@ -35,7 +74,8 @@ def formel(code, tex, untertitel="", erklaerung=""):
     dieselbe.
     """
     return {"code": code, "tex": tex, "untertitel": untertitel,
-            "erklaerung": erklaerung}
+            "erklaerung": erklaerung,
+            "zeichen": zeichen or ZEICHEN.get(untertitel, "")}
 
 KURSFORMELN = {
 
