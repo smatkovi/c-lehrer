@@ -1,35 +1,53 @@
-C-Lehrer 3.8 — die Spielwiese sagt, was gedeutet und was übersetzt wird
+C-Lehrer 4.0 — erst die Mathematik, dann die Physik, dann die Aufgabe
 
-Wer in der Spielwiese dieselbe Kleinigkeit in allen vier Sprachen laufen lässt,
-merkt sofort: C und Rust sind augenblicklich da, Python braucht einen Moment,
-C++ ein paar Sekunden. Das sah aus wie eine Aussage über die Sprachen — und
-das wäre falsch.
+Eine Aufgabe ohne genannte Annahmen ist ein Rätsel. Wer nicht weiß, welche
+Gleichung überhaupt gelöst wird, mit welchen Rand- und Anfangsbedingungen, mit
+welcher Diskretisierung und unter welcher Stabilitätsbedingung, rät nicht
+schlechter — er rät nur an einer anderen Stelle.
 
-Unter der Sprachwahl steht jetzt je ein Satz dazu:
+Über jeder der 73 Aufgaben stehen deshalb jetzt vier Blöcke, in genau dieser
+Reihenfolge:
 
-* **C** läuft hier *gedeutet* (picoc) — kein Übersetzen, also sofort.
-* **Rust** ebenso, mit `rrun`.
-* **Python** wird gedeutet, aber CPython selbst muss erst hochkommen.
-* **C++** wird wirklich *übersetzt*: g++ macht Maschinencode und bindet ihn.
+**Mathematisch** — das Modell mit seinen Formeln. Die Gleichung, das Gebiet,
+Anfangs- und Randbedingungen, die Diskretisierung, die Bedingung, unter der
+das Verfahren hält. Auch dort, wo es nicht nach Physik aussieht:
+Ganzzahldivision ist `a/b = trunc(a/b)` mit Abschneiden zur Null,
+Fließkomma ist `fl: R → F` mit `|fl(x) − x| ≤ eps·|x|`, `eps = 2⁻⁵³`.
 
-Aufgeklappt steht darunter, was der Unterschied ist: Ein Deuter liest den Text
-und tut Zeile für Zeile, was dort steht — nichts zu übersetzen, dafür ist er
-beim Laufen die ganze Zeit dabei. Ein Übersetzer macht einmal Maschinencode,
-den der Prozessor unmittelbar ausführt — die Arbeit fällt vorher an, das
-Ergebnis läuft danach schnell. Bei kurzen Programmen sieht man deshalb fast
-nur das Übersetzen.
+**Physikalisch** — woher die Gleichung kommt und was weggelassen wurde: keine
+Reibung, keine Luft, keine Quellen; welche Größe welche Einheit hat.
 
-Und bei C++ kommt dazu, dass eine einzige Zeile wie `#include <iostream>` rund
-37 000 Zeilen Schablonen hereinholt, die der Übersetzer jedes Mal neu liest.
-Das ist der größte Teil der Wartezeit, nicht das eigene Programm.
+**Annahmen** — was in keines von beiden gehört: was die Maschine tut, was die
+Aufgabe vorgibt, wie verglichen wird.
 
-Der Schlusssatz steht ausdrücklich da: Das sagt nichts darüber, welche Sprache
-schnell ist. C ist hier nur deshalb sofort da, weil die App einen kleinen
-C-Deuter mitbringt — richtig übersetztes C läuft schneller als alles andere
-hier, man wartet nur vorher.
+**Ziel** — was man am Ende gesehen haben soll.
 
-Zweisprachig wie der Rest der Oberfläche.
+Ein paar Beispiele für das, was jetzt dasteht statt nur einer Zahl:
 
-## Paket
+* **Explizites Euler:** `x'' = −x` als System, Erhaltung `dE/dt = 0`, dann die
+  Diskretisierung — und das Einsetzen, aus dem `E_(n+1) = (1 + dt²)·E_n` folgt.
+  Über die ganze Rechnung `E(T) ≈ E₀·e^(T·dt)`; mit `dt = 0,05` ist das
+  `0,5·1,0025⁴⁰⁰ = 1,3574`, mit `dt = 0,005` sind es `0,5·e^0,1 = 0,5526` —
+  beides genau die Zahlen, die das Programm ausgibt.
+* **Symplektisches Euler:** erhält nicht `E`, aber exakt
+  `H = ½v² + ½x² − (dt/2)·x·v` — deshalb schwankt `E` in einem festen Band
+  (0,4878 bis 0,5128) statt zu wachsen.
+* **Stabilitätsgrenze:** von Neumann mit `u_i^n = gⁿ·e^(i·k·h)` liefert
+  `g = 1 − 4r·sin²(k·h/2)`, und `|g| ≤ 1` verlangt `r ≤ ½`, also
+  `dt ≤ h²/(2D)`.
+* **Aufwind gegen zentral:** zentral hat `|g|² = 1 + C²·sin²(k·h) > 1` für
+  jedes `C > 0` — unbedingt instabil, obwohl der Abbruchfehler `O(h²)` ist.
+* **Druckschritt:** `div u = 0` als Zwangsbedingung, `p` als
+  Lagrange-Multiplikator, `∇²p = (ρ/dt)·div u*`, und Helmholtz-Hodge als der
+  Satz, der das Ganze trägt.
+* **Wärmeerhaltung:** `d/dt ∫u dx = D·[∂u/∂x]` am Rand — daraus folgt, warum
+  die isolierte Randzelle nur mit ihrem *einen* Nachbarn tauscht.
 
-**N9 / N950:** `dpkg -i c-lehrer_3.8_armel.deb`
+Alles zweisprachig, wie der übrige Kurs; leere Blöcke werden gar nicht erst
+angezeigt. Die Kästen stehen **über** der Aufgabe und nicht in der
+Rückmeldung: Sie verraten nichts, sie sagen nur, worüber gerechnet wird. Auch
+auf den Karteikarten — eine Karte kommt Tage später wieder, und dann ist die
+Lektion nicht mehr im Kopf.
+
+**N9 / N950:** `dpkg -i c-lehrer_4.0_armel.deb`
+**Sailfish:** `harbour-clehrer-1.14.0-1` (aarch64 und armv7hl)

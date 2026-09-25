@@ -701,3 +701,564 @@ With `printf` every type has its placeholder: `%d` for `int`, `%f` for `double`.
 '`double` is the C floating-point type with 53 bits of mantissa, barely 16 decimal digits.',
 
 })
+
+# -- Annahmen und Ziel jeder Aufgabe (aufgabenrahmen.py).
+#    Der Schluessel ist wie ueberall der deutsche Text selbst.
+EN.update({
+
+'`printf` schreibt genau die Zeichen, die dastehen, und bricht die Zeile nur um, wo `\\n` im Text steht.':
+'`printf` writes exactly the characters that are there, and breaks the line only where `\\n` appears in the text.',
+
+'Die Zahl soll als Text erscheinen, gefolgt von einem Zeilenumbruch. Verglichen wird Zeichen fuer Zeichen, der Umbruch gehoert dazu.':
+'The number is to appear as text, followed by a line break. The comparison is character by character, and the break counts.',
+
+'Die eine fehlende Zeile so ergaenzen, dass `42` und ein Umbruch herauskommen.':
+'Fill in the one missing line so that `42` and a break come out.',
+
+'Ein Programm ohne Eingabe. Verglichen wird Zeichen fuer Zeichen, der Zeilenumbruch gehoert dazu.':
+'A program without input. The comparison is character by character, and the line break counts.',
+
+'Den kleinsten vollstaendigen C-Rumpf schreiben, der eine Zeile ausgibt.':
+'Write the smallest complete C skeleton that prints one line.',
+
+'Eine Zahl im Speicher ist ein Bitmuster; erst die Deutung macht einen Wert daraus. `double` deutet 64 Bit als `(-1)^s · m · 2^e` mit 53 Bit Mantisse, `int` deutet 32 Bit als Zweierkomplement-Ganzzahl. Es sind zwei verschiedene Abbildungen von Bitmuster auf Zahl -- keine ist eine Naeherung der anderen.':
+"A number in memory is a bit pattern; only the interpretation turns it into a value. `double` reads 64 bits as `(-1)^s · m · 2^e` with 53 bits of mantissa, `int` reads 32 bits as a two's-complement integer. These are two different mappings from bit pattern to number -- neither is an approximation of the other.",
+
+'`printf` erfaehrt die Deutung **nur** aus dem Platzhalter. Ein falscher liest dieselben Bits nach der falschen Vorschrift; das ist kein Rundungsfehler, sondern eine andere Zahl.':
+'`printf` learns the interpretation **only** from the placeholder. A wrong one reads the same bits by the wrong rule; that is not a rounding error, it is a different number.',
+
+'Den Platzhalter nennen, der zu einer Kommazahl doppelter Genauigkeit gehoert.':
+'Name the placeholder that belongs to a double-precision floating-point number.',
+
+'Zwei Zahlmengen und zwei verschiedene Divisionen. `int` ist der Ausschnitt `-2^31 ... 2^31-1` der ganzen Zahlen, und `a/b` heisst dort `trunc(a/b)`, also Abschneiden zur Null hin. `double` ist die endliche Menge `F` der darstellbaren Kommazahlen, und `a/b` ist dort die gerundete reelle Division. **Welche der beiden gilt, entscheidet der Typ der Operanden** -- nicht der Typ, in den das Ergebnis gelegt wird.':
+'Two sets of numbers and two different divisions. `int` is the range `-2^31 ... 2^31-1` of the integers, and there `a/b` means `trunc(a/b)`, truncation towards zero. `double` is the finite set `F` of representable floating-point numbers, and there `a/b` is the rounded real division. **Which of the two applies is decided by the type of the operands** -- not by the type the result is put into.',
+
+'Vorhersagen, was herauskommt, wenn Ganzzahlen und Kommazahlen aufeinandertreffen.':
+'Predict what comes out when integers and floating-point numbers meet.',
+
+'Die kinetische Energie ist die Abbildung `E(m, v) = ½·m·v²`. Zwei Eingaben, eine Ausgabe, keine Naeherung -- die ganze Aufgabe ist, sie in zwei Zeilen C zu uebersetzen.':
+'The kinetic energy is the map `E(m, v) = ½ · m · v²`. Two inputs, one output, no approximation -- the whole exercise is to put it into two lines of C.',
+
+'Punktmasse `m = 2,5 kg` mit `v = 4,0 m/s`, geradlinig; keine Rotation, kein Wechsel des Bezugssystems. `E` in Joule, `1 J = 1 kg·m²/s²`, also `½·2,5·4,0² = 20,00 J`.':
+'A point mass `m = 2.5 kg` moving at `v = 4.0 m/s` in a straight line; no rotation, no change of reference frame. `E` in joules, `1 J = 1 kg·m²/s²`, so `½·2.5·4.0² = 20.00 J`.',
+
+'Zwei Groessen anlegen, die Formel hinschreiben und das Ergebnis mit zwei Nachkommastellen ausgeben.':
+'Declare two quantities, write down the formula and print the result with two decimals.',
+
+'Ganzzahldivision bildet zwei ganze Zahlen wieder auf eine ganze ab: `a/b = trunc(a/b)`, Abschneiden **zur Null hin** und nicht Abrunden -- `-7/2` ist `-3` und nicht `-4`. Der Nachkommaanteil existiert im Ergebnis gar nicht, er geht nicht verloren.':
+'Integer division maps two integers back to an integer: `a/b = trunc(a/b)`, truncation **towards zero** and not rounding down -- `-7/2` is `-3` and not `-4`. The fractional part does not exist in the result; it is not lost, it was never there.',
+
+'Erkennen, dass abgeschnitten wird, bevor der Wert irgendwo ankommt.':
+'See that truncation happens before the value arrives anywhere.',
+
+'Das Gebiet `[0, 1]` wird in `n = 10` gleich breite Zellen geteilt, die Zellweite ist `h = 1/n`. In den reellen Zahlen ist `1/10 = 0,1`, in den ganzen ist `1/10 = 0`. `1.0/n` rechnet in `F` -- dort ist `h ≈ 0,1` --, `1/n` rechnet in den ganzen Zahlen.':
+'The domain `[0, 1]` is split into `n = 10` equally wide cells, the cell width being `h = 1/n`. In the reals `1/10 = 0.1`, in the integers `1/10 = 0`. `1.0/n` computes in `F` -- there `h ≈ 0.1` -- while `1/n` computes in the integers.',
+
+'`h` ist die Zellweite eines eindimensionalen Gitters, in Metern, wenn das Gebiet ein Meter lang ist. Ein `h = 0` macht jede spaetere Ableitung `(u[i+1]-u[i])/h` unbrauchbar -- deshalb ist diese Zeile die erste, die in jedem Loeser stimmen muss.':
+'`h` is the cell width of a one-dimensional grid, in metres if the domain is one metre long. An `h = 0` makes every later derivative `(u[i+1]-u[i])/h` useless -- which is why this line is the first one that has to be right in any solver.',
+
+'Die Zeile finden, die wirklich 0,1 ergibt -- und nicht 0.':
+'Find the line that really gives 0.1 -- and not 0.',
+
+'Der Mittelwert `m = s/n` zweier ganzer Zahlen liegt im Allgemeinen **nicht** in den ganzen Zahlen. Damit die Division in `F` stattfindet, muss mindestens ein Operand dort liegen; die Umwandlung danach kommt zu spaet, weil abgeschnitten schon ist.':
+'The mean `m = s/n` of two integers generally is **not** an integer. For the division to happen in `F`, at least one operand has to live there; converting afterwards comes too late, because the truncation has already happened.',
+
+'Drei Nachkommastellen heisst `%.3f`.':
+'Three decimals means `%.3f`.',
+
+'Den Mittelwert so rechnen, dass der Nachkommaanteil ueberlebt.':
+'Compute the mean so that the fractional part survives.',
+
+'In C ist die Zuweisung ein **Ausdruck mit Wert**: `(x = 2)` hat den Wert 2. Die Bedingung prueft danach nur `Wert ≠ 0`. Also ist `if (x = 2)` immer wahr und `if (x = 0)` immer falsch, unabhaengig von `x`. `==` dagegen ist die Gleichheitsrelation und liefert 0 oder 1.':
+'In C an assignment is an **expression with a value**: `(x = 2)` has the value 2. The condition then only tests `value ≠ 0`. So `if (x = 2)` is always true and `if (x = 0)` always false, whatever `x` is. `==`, by contrast, is the equality relation and yields 0 or 1.',
+
+'Vorhersagen, welcher Zweig genommen wird.':
+'Predict which branch is taken.',
+
+'Verglichen wird auf Gleichheit zweier ganzer Zahlen -- eine Relation ohne Toleranz, und hier ist das richtig. Bei gerechneten Kommazahlen waere dieselbe Zeile die falsche Frage (siehe das Kapitel ueber Fliesskomma).':
+'What is tested is the equality of two integers -- a relation without tolerance, and here that is right. For computed floating-point numbers the same line would be the wrong question (see the chapter on floating point).',
+
+'Die Zeile nennen, die vergleicht statt zuzuweisen.':
+'Name the line that compares instead of assigning.',
+
+'`for (i = a; i < b; i++)` durchlaeuft die Menge `{a, a+1, ..., b-1}`, also das halboffene Intervall `[a, b)`: `b - a` Werte, der letzte ist `b-1`. Dieselbe Konvention gilt bei Feldindizes -- deshalb passt `for (i = 0; i < n; i++)` genau auf ein Feld mit `n` Elementen.':
+'`for (i = a; i < b; i++)` runs through the set `{a, a+1, ..., b-1}`, that is the half-open interval `[a, b)`: `b - a` values, the last one `b-1`. The same convention holds for array indices -- which is why `for (i = 0; i < n; i++)` fits an array of `n` elements exactly.',
+
+'Zaehlen, wie viele Zeilen herauskommen, und den letzten Wert nennen.':
+'Count how many lines come out, and name the last value.',
+
+'Die Summe `S = 1 + 2 + 3 + 4 + 5 = 15` als Rekursion: `S_0 = 0`, `S_k = S_(k-1) + k`. Der Startwert 0 gehoert zur Rekursion; eine Variable ohne Zuweisung enthaelt in C **keinen** definierten Wert, also summiert man sonst zu etwas Beliebigem dazu.':
+'The sum `S = 1 + 2 + 3 + 4 + 5 = 15` as a recursion: `S_0 = 0`, `S_k = S_(k-1) + k`. The starting value 0 is part of the recursion; a variable without an assignment holds **no** defined value in C, so otherwise you are adding to something arbitrary.',
+
+'Die Zeilen so ordnen, dass die Summe 1+2+3+4+5 herauskommt.':
+'Order the lines so that the sum 1+2+3+4+5 comes out.',
+
+'Die harmonische Teilsumme `H_10 = Σ_(i=1..10) 1/i = 2,9289682...`, auf vier Stellen `2,9290`. Jeder Summand `1/i` muss in `F` gerechnet werden -- in den ganzen Zahlen waere `1/i = 0` fuer jedes `i ≥ 2` und die Summe 1. `H_n` waechst wie `ln n + γ` und ist unbeschraenkt: Die Reihe hat keinen Grenzwert, nur diese Teilsumme hat einen Wert.':
+'The harmonic partial sum `H_10 = Σ_(i=1..10) 1/i = 2.9289682...`, to four decimals `2.9290`. Every term `1/i` has to be computed in `F` -- in the integers `1/i = 0` for every `i ≥ 2` and the sum would be 1. `H_n` grows like `ln n + γ` and is unbounded: the series has no limit, only this partial sum has a value.',
+
+'Die Summe mit vier Nachkommastellen ausgeben (2,9290).':
+'Print the sum with four decimals (2.9290).',
+
+"Anfangswertproblem `x'' = -(k/m)·x` mit `x(0) = 1`, `x'(0) = 0`, geschrieben als System erster Ordnung: `x' = v`, `v' = -(k/m)·x`. Die Loesung ist `x(t) = cos(ω·t)` mit `ω = √(k/m)`.\n\nErhalten ist `E = ½mv² + ½kx²`, denn `dE/dt = m·v·v' + k·x·x' = -k·x·v + k·x·v = 0`.\n\nDiskretisiert wird explizit (beide Seiten aus dem **alten** Schritt): `x_(n+1) = x_n + v_n·dt`, `v_(n+1) = v_n - x_n·dt`. Einsetzen ergibt `E_(n+1) = (1 + dt²)·E_n` -- das Verfahren erhaelt die Energie nicht, es multipliziert sie in jedem Schritt mit einem Faktor groesser als 1.":
+"Initial value problem `x'' = -(k/m)·x` with `x(0) = 1`, `x'(0) = 0`, written as a first-order system: `x' = v`, `v' = -(k/m)·x`. The solution is `x(t) = cos(ω·t)` with `ω = √(k/m)`.\n\nThe conserved quantity is `E = ½mv² + ½kx²`, because `dE/dt = m·v·v' + k·x·x' = -k·x·v + k·x·v = 0`.\n\nThe discretisation is explicit (both sides from the **old** step): `x_(n+1) = x_n + v_n·dt`, `v_(n+1) = v_n - x_n·dt`. Substituting gives `E_(n+1) = (1 + dt²)·E_n` -- the scheme does not conserve the energy, it multiplies it by a factor greater than 1 at every step.",
+
+'Punktmasse `m = 1 kg` an einer Feder mit `k = 1 N/m`, deshalb `a = -x`. Keine Reibung, keine Luft, keine Schwerkraft -- ein abgeschlossenes System, in dem die Energie sich nicht aendern **darf**. Start bei `x = 1 m`, `v = 0`, also `E = 0,5 J`.':
+'A point mass `m = 1 kg` on a spring with `k = 1 N/m`, hence `a = -x`. No friction, no air, no gravity -- a closed system in which the energy **must not** change. Starting at `x = 1 m`, `v = 0`, so `E = 0.5 J`.',
+
+'Zeitschritt `dt = 0,05 s`, 400 Schritte, also 20 s.':
+'Time step `dt = 0.05 s`, 400 steps, so 20 s.',
+
+'Erkennen, dass eine wachsende Energie kein Rundungsfehler ist, sondern das Verfahren selbst.':
+'Recognise that a growing energy is not a rounding error but the method itself.',
+
+'Derselbe Wachstumsfaktor, jetzt ueber die ganze Rechnung: `E_N = (1 + dt²)^N · E_0` mit `N = T/dt`, also `E(T) ≈ E_0 · e^(T·dt)`. Der Fehler faellt **linear** mit `dt` und verschwindet nicht.\n\n`dt = 0,05`: `0,5 · 1,0025^400 = 1,3574`. `dt = 0,005`: `0,5 · e^0,1 = 0,5526`. Beides sind genau die Zahlen, die das Programm ausgibt -- die App laesst sich hier von Hand nachrechnen.':
+'The same growth factor, now over the whole computation: `E_N = (1 + dt²)^N · E_0` with `N = T/dt`, so `E(T) ≈ E_0 · e^(T·dt)`. The error falls **linearly** with `dt` and does not vanish.\n\n`dt = 0.05`: `0.5 · 1.0025^400 = 1.3574`. `dt = 0.005`: `0.5 · e^0.1 = 0.5526`. Both are exactly the numbers the program prints -- here the app can be checked by hand.',
+
+'Dieselbe Feder, dieselbe Zeitspanne von 20 s.':
+'The same spring, the same span of 20 s.',
+
+'`dt = 0,005 s` und dafuer 4000 Schritte.':
+'`dt = 0.005 s` and 4000 steps instead.',
+
+'Nachmessen, um welchen Faktor der Energiefehler faellt, wenn der Zeitschritt auf ein Zehntel geht -- und sehen, dass er faellt und nicht verschwindet.':
+'Measure by what factor the energy error falls when the time step goes down to a tenth -- and see that it falls without vanishing.',
+
+'Symplektisches (halbimplizites) Euler-Verfahren: erst `v_(n+1) = v_n - x_n·dt`, dann `x_(n+1) = x_n + v_(n+1)·dt` mit dem **neuen** `v`. Nur die Reihenfolge aendert sich.\n\nEs erhaelt `E` nicht exakt, aber es erhaelt exakt eine benachbarte Groesse: `H = ½v² + ½x² - (dt/2)·x·v` bleibt bei dieser Feder bis auf Rundung konstant. Weil `H` und `E` sich nur um `O(dt)` unterscheiden, schwankt `E` in einem **festen Band** (hier 0,4878 bis 0,5128) und waechst nicht.':
+'Symplectic (semi-implicit) Euler: first `v_(n+1) = v_n - x_n·dt`, then `x_(n+1) = x_n + v_(n+1)·dt` with the **new** `v`. Only the order changes.\n\nIt does not conserve `E` exactly, but it does conserve a neighbouring quantity exactly: `H = ½v² + ½x² - (dt/2)·x·v` stays constant for this spring up to rounding. Since `H` and `E` differ only by `O(dt)`, the energy oscillates within a **fixed band** (here 0.4878 to 0.5128) instead of growing.',
+
+'Dieselbe Feder, derselbe Zeitschritt wie im Beispiel.':
+'The same spring, the same time step as in the example.',
+
+'Zeigen, dass eine vertauschte Zeile aus einem Verfahren, das Energie erzeugt, eines macht, das sie haelt.':
+'Show that swapping one line turns a scheme that creates energy into one that keeps it.',
+
+'Velocity-Verlet: `x_(n+1) = x_n + v_n·dt + ½·a_n·dt²`, dann `a_(n+1) = -x_(n+1)`, dann `v_(n+1) = v_n + ½·(a_n + a_(n+1))·dt`. Das Verfahren ist von zweiter Ordnung, symplektisch und zeitumkehrbar.\n\nDaraus folgt: `E` schwankt mit `O(dt²)` um den wahren Wert, ohne Drift. Bei `dt = 0,05` ist das Band `dt²/8 = 3,1·10^-4` breit -- die Energie bleibt zwischen 0,4997 und 0,5000.':
+'Velocity Verlet: `x_(n+1) = x_n + v_n·dt + ½·a_n·dt²`, then `a_(n+1) = -x_(n+1)`, then `v_(n+1) = v_n + ½·(a_n + a_(n+1))·dt`. The scheme is second order, symplectic and time-reversible.\n\nIt follows that `E` oscillates with `O(dt²)` around the true value, without drift. At `dt = 0.05` the band is `dt²/8 = 3.1·10^-4` wide -- the energy stays between 0.4997 and 0.5000.',
+
+'Dieselbe Feder `m = 1 kg`, `k = 1 N/m`, derselbe Start `x = 1 m`, `v = 0`, also `E = 0,5 J`.':
+'The same spring `m = 1 kg`, `k = 1 N/m`, the same start `x = 1 m`, `v = 0`, so `E = 0.5 J`.',
+
+'`dt = 0,05 s`, 400 Schritte.':
+'`dt = 0.05 s`, 400 steps.',
+
+'Vorhersagen, dass die Energie weder waechst noch faellt, sondern in einem schmalen Band bleibt.':
+'Predict that the energy neither grows nor decays but stays in a narrow band.',
+
+'Ein Schritt in vier Teilen, und die Reihenfolge ist das Verfahren: `a_n` aus dem alten Ort, dann der Ort mit `v_n·dt + ½a_n·dt²`, dann `a_(n+1)` aus dem **neuen** Ort, dann die Geschwindigkeit mit dem Mittel `½(a_n + a_(n+1))`. Wer die Beschleunigung nur einmal auswertet, hat wieder ein Verfahren erster Ordnung.':
+'One step in four parts, and the order is the method: `a_n` from the old position, then the position with `v_n·dt + ½a_n·dt²`, then `a_(n+1)` from the **new** position, then the velocity with the average `½(a_n + a_(n+1))`. Evaluate the acceleration only once and you are back to a first-order scheme.',
+
+'Den Schritt so zusammensetzen, dass jede halbe Geschwindigkeitsstufe die Beschleunigung ihres eigenen Zeitpunkts benutzt.':
+'Assemble the step so that each half velocity stage uses the acceleration belonging to its own point in time.',
+
+"Beide Verfahren auf derselben Gleichung `x'' = -x`, mit demselben `dt = 0,05` und denselben 400 Schritten -- der einzige Unterschied ist das Verfahren. Erwartet werden `1,3574` (Euler, `0,5·(1+dt²)^400`) und `0,4997` (Verlet, im Band `dt²/8`).":
+"Both schemes on the same equation `x'' = -x`, with the same `dt = 0.05` and the same 400 steps -- the only difference is the method. Expected are `1.3574` (Euler, `0.5·(1+dt²)^400`) and `0.4997` (Verlet, inside the band `dt²/8`).",
+
+'Dieselbe Feder, derselbe Start `x = 1 m`, `v = 0`.':
+'The same spring, the same start `x = 1 m`, `v = 0`.',
+
+'Die beiden Energiekurven nebeneinander sehen: die eine laeuft davon, die andere bleibt.':
+'See the two energy curves side by side: one runs away, the other stays.',
+
+'Uebergabe als Wert: die Funktion bekommt eine **Kopie** und ist damit eine Abbildung `Wert -> Wert` ohne Nebenwirkung auf den Aufrufer. Was sie an ihrem Parameter aendert, endet mit ihr.':
+'Passing by value: the function gets a **copy** and is therefore a map `value -> value` with no effect on the caller. Whatever it changes about its parameter ends with it.',
+
+'Vorhersagen, welchen Wert der Aufrufer nach dem Aufruf sieht.':
+'Predict the value the caller sees after the call.',
+
+"Gesucht ist `I = ∫_0^π sin(x) dx = 2`.\n\nTrapezregel auf `n` gleich breiten Streifen der Breite `h = π/n`: `T_n = h·(f(x_0)/2 + Σ_(i=1..n-1) f(x_i) + f(x_n)/2)` mit `x_i = i·h`.\n\nDer Fehler ist `I - T_n = -(b-a)·h²/12 · f''(ξ)` fuer ein `ξ` im Intervall, also `O(h²) = O(1/n²)`: **verdoppeltes `n` viertelt den Fehler**. Bei `n = 1000` sind das rund `10^-6`.":
+"Wanted is `I = ∫_0^π sin(x) dx = 2`.\n\nThe trapezoidal rule on `n` equally wide strips of width `h = π/n`: `T_n = h·(f(x_0)/2 + Σ_(i=1..n-1) f(x_i) + f(x_n)/2)` with `x_i = i·h`.\n\nThe error is `I - T_n = -(b-a)·h²/12 · f''(ξ)` for some `ξ` in the interval, so `O(h²) = O(1/n²)`: **doubling `n` quarters the error**. At `n = 1000` that is about `10^-6`.",
+
+'Die Funktion schreiben und sehen, wie nah sie bei 2 landet -- und um welchen Faktor der Fehler faellt, wenn `n` verdoppelt wird.':
+'Write the function and see how close it lands to 2 -- and by what factor the error falls when `n` is doubled.',
+
+'`double` ist die **endliche** Menge `F` der Zahlen `±m·2^e` mit 53 Bit Mantisse. Die Rundung `fl` bildet jede reelle Zahl auf die naechste davon ab und erfuellt `|fl(x) - x| ≤ eps·|x|` mit `eps = 2^-53 ≈ 1,11·10^-16`.\n\n`0,1` und `0,2` sind im Zweiersystem periodisch, liegen also nicht in `F`. Gerechnet wird `fl(fl(0,1) + fl(0,2))`, und das ist nicht `fl(0,3)`.':
+'`double` is the **finite** set `F` of numbers `±m·2^e` with 53 bits of mantissa. Rounding `fl` maps every real number to the nearest of them and satisfies `|fl(x) - x| ≤ eps·|x|` with `eps = 2^-53 ≈ 1.11·10^-16`.\n\n`0.1` and `0.2` are periodic in binary, so they are not in `F`. What is computed is `fl(fl(0.1) + fl(0.2))`, and that is not `fl(0.3)`.',
+
+'Die Lektion wird gelesen und vorhergesagt, nicht ausgefuehrt: Der kleine C-Deuter dieser App kennt `float` und `double` nicht getrennt.':
+'This lesson is read and predicted, not run: the small C interpreter in this app does not distinguish `float` from `double`.',
+
+'Vorhersagen, was ein echter Uebersetzer schreibt -- und warum die zweite Zeile nicht die erwartete ist.':
+'Predict what a real compiler prints -- and why the second line is not the expected one.',
+
+'Jede Grundrechenart liefert `fl(a ∘ b)` und nicht `a ∘ b`. Zwei Rechenwege zum selben reellen Wert enden deshalb bei zwei verschiedenen Elementen von `F`. Die Gleichheit ist auf `F` sauber definiert -- sie beantwortet nur nicht die Frage, die gemeint war.':
+'Every elementary operation yields `fl(a ∘ b)` and not `a ∘ b`. Two computational routes to the same real value therefore end at two different elements of `F`. Equality is perfectly well defined on `F` -- it just does not answer the question that was meant.',
+
+'Begruenden, warum auf Gleichheit zu pruefen hier die falsche Frage ist -- und welche die richtige waere.':
+'Give the reason why testing for equality is the wrong question here -- and what the right one would be.',
+
+'Der Abstand zweier benachbarter Elemente von `F` bei `x` ist `ulp(x) = 2^(e-52)`, wenn `2^e ≤ |x| < 2^(e+1)`. Fuer `x = 10^16` ist `e = 53`, also `ulp = 2`. Damit ist `fl(10^16 + 1) = 10^16`: Die Addition ist dort nicht mehr injektiv -- der Summand verschwindet vollstaendig.':
+'The distance between neighbouring elements of `F` at `x` is `ulp(x) = 2^(e-52)` when `2^e ≤ |x| < 2^(e+1)`. For `x = 10^16` we have `e = 53`, so `ulp = 2`. Hence `fl(10^16 + 1) = 10^16`: addition is no longer injective there -- the summand disappears completely.',
+
+'Vorhersagen, was `1e16 + 1` ergibt, und erklaeren, warum das nicht Rundung heisst, sondern Unveraendertheit.':
+'Predict what `1e16 + 1` gives, and explain why that is not called rounding but being unchanged.',
+
+'Gefragt ist nicht `a = b`, sondern `|a - b| ≤ tol`.\n\nAbsolut mit festem `tol` taugt nur in einem Groessenbereich: `10^-9` ist fuer Millionen zu streng und fuer Millionstel zu grosszuegig. Relativ `|a - b| ≤ rtol·max(|a|, |b|)` waechst mit den Zahlen mit, versagt aber bei `a = b = 0`. Ueblich ist deshalb die Mischung `|a - b| ≤ atol + rtol·max(|a|, |b|)`.':
+'What is asked is not `a = b` but `|a - b| ≤ tol`.\n\nAn absolute `tol` only works within one range of magnitudes: `10^-9` is too strict for millions and too generous for millionths. A relative test `|a - b| ≤ rtol·max(|a|, |b|)` grows with the numbers but fails at `a = b = 0`. The usual answer is the mixture `|a - b| ≤ atol + rtol·max(|a|, |b|)`.',
+
+'Eine Pruefung schreiben, die mit der Groesse der Zahlen mitwaechst.':
+'Write a test that grows with the magnitude of the numbers.',
+
+'`double u[10];` legt die Plaetze `u[0] ... u[9]` an -- die Indizes durchlaufen `[0, n)`, nicht `[1, n]`. Zwei Zaehlweisen sind im Umlauf, „n Elemente“ und „Index bis n-1“; `for (i = 0; i < n; i++)` hat beide in einer Zeile richtig.':
+'`double u[10];` allocates the slots `u[0] ... u[9]` -- the indices run over `[0, n)`, not `[1, n]`. Two ways of counting are in circulation, “n elements” and “index up to n-1”; `for (i = 0; i < n; i++)` gets both right in one line.',
+
+'C prueft beim Zugriff **nichts**: `u[10]` wird uebersetzt und laeuft, es liest nur, was zufaellig dahinter liegt.':
+'C checks **nothing** on access: `u[10]` compiles and runs, it merely reads whatever happens to lie beyond.',
+
+'Den letzten Index nennen, der noch zum Feld gehoert.':
+'Name the last index that still belongs to the array.',
+
+'Ein einzelner `double` wird beim Aufruf kopiert, ein Feld nicht: Der Feldname **zerfaellt zur Adresse** seines ersten Elements. Uebergeben wird also ein Zeiger; der ist zwar selbst eine Kopie, aber die Kopie einer Adresse zeigt auf dasselbe. Die Funktion arbeitet am Original.':
+'A single `double` is copied on the call, an array is not: the array name **decays to the address** of its first element. So what is passed is a pointer; it is itself a copy, but the copy of an address points to the same thing. The function works on the original.',
+
+'Vorhersagen, ob die Aenderung in `aendern` beim Aufrufer ankommt.':
+'Predict whether the change made in `aendern` arrives at the caller.',
+
+'Gesucht ist `max{v_0, ..., v_(n-1)}`. Als Rekursion: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`. Der Startwert **muss** `v_0` sein und nicht 0 -- mit 0 rechnet man das Maximum von `{0, v_0, ..., v_(n-1)}`, und fuer lauter negative Werte ist das eine Zahl, die im Feld gar nicht vorkommt. Fuer `n = 0` ist das Maximum nicht definiert; dieser Fall kommt hier nicht vor.':
+'Wanted is `max{v_0, ..., v_(n-1)}`. As a recursion: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`. The starting value **must** be `v_0` and not 0 -- with 0 you compute the maximum of `{0, v_0, ..., v_(n-1)}`, and for all-negative values that is a number which does not occur in the array at all. For `n = 0` the maximum is undefined; that case does not occur here.',
+
+'Acht Werte, das Maximum ist 9,0.':
+'Eight values, the maximum is 9.0.',
+
+'Das Maximum mit dem ersten Element als Startwert suchen und sehen, warum die naheliegende 0 falsch ist.':
+'Search for the maximum with the first element as the starting value and see why the obvious 0 is wrong.',
+
+'Ein Zeiger ist eine Adresse. `&a` liefert die Adresse von `a`, `*p` den Wert an der Adresse `p` -- die beiden Abbildungen sind zueinander invers: `*(&a)` ist `a`. Der Stern hat dabei zwei Rollen: in der Deklaration „Zeiger auf“, im Ausdruck „der Wert dort“.':
+'A pointer is an address. `&a` gives the address of `a`, `*p` the value at the address `p` -- the two maps are inverse to each other: `*(&a)` is `a`. The star has two roles in this: in a declaration “pointer to”, in an expression “the value there”.',
+
+'Vorhersagen, was ein Schreiben ueber den Zeiger an der Variablen aendert.':
+'Predict what writing through the pointer changes about the variable.',
+
+'`u[i]` ist in C **definiert** als `*(u + i)`. Die Zeigerrechnung zaehlt in Elementen und nicht in Bytes: `u + i` ist die Adresse `u + i·sizeof(*u)`. Aus der Definition folgt nebenbei, dass auch `3[u]` gueltiges C ist -- gebraeuchlich ist das nicht, es zeigt nur, wie woertlich die Regel gemeint ist.':
+'`u[i]` is **defined** in C as `*(u + i)`. Pointer arithmetic counts in elements, not in bytes: `u + i` is the address `u + i·sizeof(*u)`. From the definition it follows incidentally that `3[u]` is valid C as well -- not that anyone writes it, but it shows how literally the rule is meant.',
+
+'Die Schreibweise nennen, die dasselbe bedeutet wie `u[3]`.':
+'Name the spelling that means the same as `u[3]`.',
+
+'Gesucht ist `v_i := f·v_i` fuer alle `i`, eine Skalierung an Ort und Stelle. Die Summe danach ist `f·Σ v_i = 2,5·(1+2+3+4) = 25`. `*(v + i)` und `v[i]` erzeugen denselben Maschinencode -- die Wahl ist eine des Lesens.':
+'Wanted is `v_i := f·v_i` for every `i`, a scaling in place. The sum afterwards is `f·Σ v_i = 2.5·(1+2+3+4) = 25`. `*(v + i)` and `v[i]` produce the same machine code -- the choice is one of reading.',
+
+'Ein Feld an Ort und Stelle veraendern und sehen, dass die Aenderung beim Aufrufer ankommt, weil `w` die Adresse **ist**.':
+'Change an array in place and see that the change arrives at the caller, because `w` **is** the address.',
+
+'Waermeleitungsgleichung `∂u/∂t = D·∂²u/∂x²`.\n\nZweite Ableitung als Drei-Punkt-Stern: `∂²u/∂x² ≈ (u_(i-1) - 2u_i + u_(i+1))/h²`, Fehler `O(h²)`. Zeit explizit: `u_i^(n+1) = u_i^n + r·(u_(i-1)^n - 2u_i^n + u_(i+1)^n)` mit `r = D·dt/h²`.\n\nDie hochgestellte `n` steht in **jedem** Term rechts: Alle drei Nachbarn sind vom alten Zeitschritt. Schreibt man direkt in `u`, ist `u_(i-1)` beim Erreichen von `i` bereits der neue Wert -- das ist dann das Gauss-Seidel-Verfahren, ein anderes Verfahren mit anderer Loesung, keine Ersparnis.':
+'The heat equation `∂u/∂t = D·∂²u/∂x²`.\n\nThe second derivative as a three-point stencil: `∂²u/∂x² ≈ (u_(i-1) - 2u_i + u_(i+1))/h²`, error `O(h²)`. Time explicitly: `u_i^(n+1) = u_i^n + r·(u_(i-1)^n - 2u_i^n + u_(i+1)^n)` with `r = D·dt/h²`.\n\nThe superscript `n` is on **every** term on the right: all three neighbours come from the old time level. Writing directly into `u` makes `u_(i-1)` already the new value by the time `i` is reached -- that is the Gauss-Seidel scheme, a different method with a different solution, not a saving.',
+
+'Waerme in einem duennen Stab: `u` ist die Temperatur, `D` die Temperaturleitfaehigkeit in m²/s. Keine Quellen, keine Strahlung, kein Waermestrom laengs der Zeit -- nur Diffusion.':
+'Heat in a thin rod: `u` is the temperature, `D` the thermal diffusivity in m²/s. No sources, no radiation, no transport along the rod -- diffusion only.',
+
+'Sehen, warum das zweite Feld kein Umweg ist, sondern zur Definition des Verfahrens gehoert.':
+'See why the second array is not a detour but part of the definition of the scheme.',
+
+'Die Erhaltung folgt aus der Gleichung: `d/dt ∫u dx = D·[∂u/∂x]` an den Raendern. Ohne Waermestrom ueber den Rand (`∂u/∂x = 0`, Neumann-Bedingung) bleibt `∫u dx` konstant.\n\nDiskret heisst das: Die Randzelle tauscht nur mit ihrem **einen** Nachbarn, `u_0^(n+1) = u_0^n + r·(u_1^n - u_0^n)`, ebenso am anderen Ende. Dann ist die Summe ueber alle Zellen ein Teleskop und bleibt exakt bei 1. Mit `u_0 = 0` (Dirichlet) statt dessen fliesst Waerme ab, und die Summe faellt.':
+'Conservation follows from the equation: `d/dt ∫u dx = D·[∂u/∂x]` at the boundaries. With no heat flux across the boundary (`∂u/∂x = 0`, a Neumann condition) `∫u dx` stays constant.\n\nDiscretely that means the boundary cell exchanges with its **one** neighbour, `u_0^(n+1) = u_0^n + r·(u_1^n - u_0^n)`, and likewise at the other end. The sum over all cells is then a telescope and stays exactly at 1. With `u_0 = 0` (Dirichlet) instead, heat flows out and the sum falls.',
+
+'Stab mit **isolierten** Enden statt festgehaltener Temperatur. Anfangszustand: alles kalt, eine Einheit Waerme in der Mittelzelle. `n = 41` Zellen, `r = 0,4`, 200 Schritte; erwartet `0,031829` in der Mitte und `1,000000` als Summe.':
+'A rod with **insulated** ends instead of held temperatures. Initially everything is cold with one unit of heat in the middle cell. `n = 41` cells, `r = 0.4`, 200 steps; expected are `0.031829` in the middle and `1.000000` as the sum.',
+
+'Die Randbedingung so aendern, dass die Erhaltung, die in der Gleichung steht, auch im Programm gilt.':
+'Change the boundary condition so that the conservation which is in the equation also holds in the program.',
+
+'Stabilitaet des expliziten Sterns, nach von Neumann: Der Ansatz `u_i^n = g^n·e^(i·k·h)` liefert den Verstaerkungsfaktor `g = 1 - 4r·sin²(k·h/2)`. `|g| ≤ 1` fuer alle `k` verlangt `r ≤ ½`.\n\nMit `r = D·dt/h²` heisst das `dt ≤ h²/(2D)`: **Halbiert man `h`, muss `dt` geviertelt werden.** Die Arbeit waechst dann um das Achtfache -- doppelt so viele Zellen, viermal so viele Schritte.':
+'Stability of the explicit stencil, by von Neumann: the ansatz `u_i^n = g^n·e^(i·k·h)` gives the amplification factor `g = 1 - 4r·sin²(k·h/2)`. Requiring `|g| ≤ 1` for every `k` gives `r ≤ ½`.\n\nWith `r = D·dt/h²` that reads `dt ≤ h²/(2D)`: **halve `h` and `dt` has to be quartered.** The work then grows eightfold -- twice as many cells, four times as many steps.',
+
+'`D` ist durch das Material gegeben und aendert sich nicht, wenn man das Gitter verfeinert. Frei ist nur `dt`.':
+'`D` is given by the material and does not change when the grid is refined. The only free quantity is `dt`.',
+
+'Den Preis eines feineren Gitters ablesen.':
+'Read off the price of a finer grid.',
+
+'Bei `r = ½` ist `g = 1 - 2·sin²(k·h/2)`, also genau `|g| ≤ 1` -- gerade noch stabil, und die kuerzeste Welle (`k·h = π`) wird mit `g = -1` von Schritt zu Schritt gespiegelt statt gedaempft. Ueber der Grenze ist `|g| > 1`: Das Verfahren wird nicht ungenau, es schwingt sich mit wachsender Amplitude auf.':
+'At `r = ½` we get `g = 1 - 2·sin²(k·h/2)`, so exactly `|g| ≤ 1` -- just barely stable, and the shortest wave (`k·h = π`) is mirrored from step to step with `g = -1` instead of being damped. Above the limit `|g| > 1`: the scheme does not become inaccurate, it oscillates with growing amplitude.',
+
+'`n = 41` Zellen, festgehaltene Raender (Temperatur 0), eine Einheit Waerme in der Mitte, 60 Schritte. Groesster Wert im Feld danach: `0,102578`.':
+'`n = 41` cells, boundaries held at temperature 0, one unit of heat in the middle, 60 steps. The largest value in the field afterwards: `0.102578`.',
+
+'Die Grenze von beiden Seiten sehen: bei 0,5 haelt es, ein wenig darueber nicht mehr.':
+'See the limit from both sides: at 0.5 it still holds, a little above it does not.',
+
+'`p->x` ist die Kurzform fuer `(*p).x`. Die Klammern sind noetig, weil der Punkt staerker bindet als der Stern: `*p.x` hiesse „dereferenziere `p.x`“ und ist etwas anderes.':
+'`p->x` is the short form of `(*p).x`. The parentheses are needed because the dot binds more tightly than the star: `*p.x` would mean “dereference `p.x`” and is something else.',
+
+'Der Pfeil ist nicht nur kuerzer, er macht verkettete Zugriffe ueberhaupt lesbar: `zelle->nachbar->druck` gegen `(*(*zelle).nachbar).druck`.':
+'The arrow is not merely shorter, it is what makes chained access readable at all: `zelle->nachbar->druck` against `(*(*zelle).nachbar).druck`.',
+
+'Die Kurzform nennen, mit der man ueber einen Zeiger an ein Feld der Struktur kommt.':
+'Name the short form that reaches a member of the structure through a pointer.',
+
+'Der Schwerpunkt ist `x_s = (Σ m_i·x_i)/(Σ m_i)`. Sind alle Massen gleich, kuerzt sich `m` heraus und es bleibt der gewoehnliche Mittelwert `x_s = (Σ x_i)/n`.\n\nHier sind die Orte `x_i = i²` fuer `i = 0..4`, also 0, 1, 4, 9, 16; Summe 30, geteilt durch 5 ergibt 6,0000.':
+'The centre of mass is `x_s = (Σ m_i·x_i)/(Σ m_i)`. If all masses are equal, `m` cancels and the ordinary mean `x_s = (Σ x_i)/n` remains.\n\nHere the positions are `x_i = i²` for `i = 0..4`, that is 0, 1, 4, 9, 16; the sum is 30, divided by 5 it gives 6.0000.',
+
+'Fuenf Teilchen auf einer Geraden, alle mit **derselben** Masse; deshalb faellt die Wichtung weg. Mit verschiedenen Massen waere der Mittelwert der Orte nicht der Schwerpunkt.':
+'Five particles on a line, all of **the same** mass; that is why the weighting drops out. With different masses the mean of the positions would not be the centre of mass.',
+
+'Der Parameter ist ein Zeiger auf die erste Struktur -- das Feld wird nicht kopiert, und `t[i].x` funktioniert trotzdem wie gewohnt.':
+'The parameter is a pointer to the first structure -- the array is not copied, and `t[i].x` still works as usual.',
+
+'Den Schwerpunkt als Summe durch Anzahl rechnen und die uebliche C-Signatur lesen lernen: Zeiger auf das erste Element plus Anzahl.':
+'Compute the centre of mass as sum over count and learn to read the usual C signature: pointer to the first element plus a count.',
+
+'Ein zweidimensionales Gitter wird flach abgelegt, Zeile hinter Zeile: Die Zelle `(i, j)` liegt bei `j·nx + i`. Das ist eine Bijektion `[0, nx) × [0, ny) -> [0, nx·ny)` -- zeilenweise Anordnung, in C die uebliche.\n\nMerkhilfe: Der Index, der in der **inneren** Schleife laeuft, steht in der Formel ohne Faktor. `for (j...) for (i...)` mit `u[j*nx + i]` laeuft im Speicher hintereinander weg.':
+'A two-dimensional grid is stored flat, row after row: the cell `(i, j)` sits at `j·nx + i`. That is a bijection `[0, nx) × [0, ny) -> [0, nx·ny)` -- row-major order, the usual one in C.\n\nA mnemonic: the index that runs in the **inner** loop appears in the formula without a factor. `for (j...) for (i...)` with `u[j*nx + i]` runs straight through memory.',
+
+'Die Indexformel nennen, bei der die innere Schleife im Speicher hintereinander weglaeuft.':
+'Name the index formula for which the inner loop runs straight through memory.',
+
+'Gitter `nx = 12` mal `ny = 10`, jede Zelle traegt `i·j`. Rand heisst `i = 0`, `i = nx-1`, `j = 0` oder `j = ny-1`.\n\nDie Zellen mit `i = 0` und die mit `j = 0` tragen null. Es bleiben die Kante `i = 11` mit `11·Σ_(j=0..9) j = 11·45 = 495` und die Kante `j = 9` mit `9·Σ_(i=0..11) i = 9·66 = 594`. Die Ecke `(11, 9) = 99` liegt in beiden Summen, also `495 + 594 - 99 = 990` -- wer die vier Kanten getrennt abgeht, zaehlt die Ecken doppelt.':
+'A grid `nx = 12` by `ny = 10`, every cell carrying `i·j`. Boundary means `i = 0`, `i = nx-1`, `j = 0` or `j = ny-1`.\n\nThe cells with `i = 0` and those with `j = 0` carry zero. What is left is the edge `i = 11` with `11·Σ_(j=0..9) j = 11·45 = 495` and the edge `j = 9` with `9·Σ_(i=0..11) i = 9·66 = 594`. The corner `(11, 9) = 99` lies in both sums, so `495 + 594 - 99 = 990` -- whoever walks the four edges separately counts the corners twice.',
+
+'In einem Loeser steht am Rand die Randbedingung, deshalb wird er getrennt behandelt. Ueblich ist eine **Geisterzellenschicht**: eine zusaetzliche Zelle ringsherum, vor jedem Schritt gefuellt -- danach ist das Innere ohne Sonderfall zu rechnen.':
+'In a solver the boundary carries the boundary condition, which is why it is treated separately. The usual device is a **ghost cell layer**: one extra cell all around, filled before every step -- after which the interior is computed with no special case at all.',
+
+'Ein flaches Gitter anlegen, es fuellen und den Rand genau einmal aufsummieren.':
+'Allocate a flat grid, fill it and sum the boundary exactly once.',
+
+'Eine Referenz ist ein zweiter Name fuer dasselbe Objekt: keine Kopie und keine eigene Adresse, die man sehen koennte. Die Funktion arbeitet damit am Original des Aufrufers -- an der Aufrufstelle steht trotzdem nur `schritt(f)`.':
+"A reference is a second name for the same object: no copy and no address of its own that you could look at. The function thereby works on the caller's original -- and the call site still reads just `schritt(f)`.",
+
+'Sagen, was mit dem Original des Aufrufers geschieht.':
+"Say what happens to the caller's original.",
+
+'Ein Gitterfeld mit `N = 10^6` Zellen zu je 8 Byte sind 8 MB. Ohne `&` entsteht je Aufruf eine vollstaendige Kopie, also Aufwand `O(N)` **zusaetzlich** zu dem, was die Funktion rechnet. In einer Zeitschleife mit `M` Schritten macht das `O(M·N)` sinnlos kopierte Zahlen.':
+'A grid field of `N = 10^6` cells at 8 bytes each is 8 MB. Without the `&` a complete copy is made per call, that is `O(N)` work **on top of** whatever the function computes. In a time loop of `M` steps that makes `O(M·N)` pointlessly copied numbers.',
+
+'Die Faustregel in numerischem C++: alles, was groesser ist als ein paar Zahlen, per `const&`; kleine Werte wie `double` oder `int` als Kopie, die ist billiger als der Umweg ueber eine Adresse.':
+'The rule of thumb in numerical C++: anything bigger than a couple of numbers goes by `const&`; small values such as `double` or `int` go by copy, which is cheaper than the detour through an address.',
+
+'Erkennen, dass das fehlende `&` kein Stilfehler ist, sondern der Unterschied zwischen Sekunden und Stunden.':
+'Recognise that the missing `&` is not a matter of style but the difference between seconds and hours.',
+
+'Zwei Funktionen mit demselben Rumpf `x = x*2`, einmal auf einer Referenz (`int&`) und einmal auf einer Kopie (`int`). Der Unterschied ist genau der zwischen `f: Wert -> Wert` und einer Abbildung, die den Zustand des Aufrufers aendert.':
+"Two functions with the same body `x = x*2`, one on a reference (`int&`) and one on a copy (`int`). The difference is exactly that between `f: value -> value` and a map that changes the caller's state.",
+
+'Beide Variablen starten bei 5.':
+'Both variables start at 5.',
+
+'An zwei Zahlen ablesen, was die Referenz gegenueber der Kopie aendert.':
+'Read off from two numbers what the reference changes compared to the copy.',
+
+'Die Frage ist nach dem **Zeitpunkt**, nicht nach einem Aufruf: Der Destruktor laeuft, wenn der Block endet -- auch bei vorzeitigem `return` und wenn eine Ausnahme den Block verlaesst. In C steht am Ende jeder Funktion ein `free`, und jeder vorzeitige Ausgang braucht sein eigenes; fehlt eines, waechst der Verbrauch mit der Laufzeit.':
+'The question is about the **moment**, not about a call: the destructor runs when the block ends -- including on an early `return` and when an exception leaves the block. In C there is a `free` at the end of every function, and every early exit needs its own; miss one and consumption grows with the running time.',
+
+'Den Zeitpunkt der Freigabe nennen und ihn mit dem `free` von Hand in C vergleichen.':
+'Name the moment of release and compare it with the hand-written `free` in C.',
+
+'Derselbe explizite Schritt wie in C: `w_i = u_i + r·(u_(i-1) - 2u_i + u_(i+1))` fuer die inneren Zellen, die Raender bleiben stehen. `w` entsteht als **Kopie** von `u`, damit die Randwerte darin stehen und nicht Nullen.\n\n`u.swap(w)` tauscht nur die drei Zahlen, aus denen ein `vector` besteht (Zeiger, Laenge, Platz) -- Aufwand `O(1)`, unabhaengig von der Gittergroesse. In C ist das `double *t = u; u = w; w = t;`.':
+'The same explicit step as in C: `w_i = u_i + r·(u_(i-1) - 2u_i + u_(i+1))` for the interior cells, the boundaries staying as they are. `w` is created as a **copy** of `u` so that it carries the boundary values and not zeros.\n\n`u.swap(w)` exchanges only the three numbers a `vector` consists of (pointer, size, capacity) -- `O(1)` work, whatever the grid size. In C that is `double *t = u; u = w; w = t;`.',
+
+'Die Zeilen in die Reihenfolge bringen, die jeder Loeser hat: zweites Feld anlegen, innen rechnen, tauschen.':
+'Put the lines into the order every solver has: allocate the second field, compute inside, swap.',
+
+'Eine Vorlage mit **einem** Typparameter `T` beschreibt eine Schar von Funktionen; der Uebersetzer erzeugt je benutztem Typ eine eigene. `groesser(3, 7)` bestimmt `T = int`, `groesser(2.5, 1.5)` bestimmt `T = double`. `groesser(3, 2.5)` haette zwei verschiedene Kandidaten fuer dasselbe `T` und ist ein Fehler; zu retten waere es mit zwei Typparametern oder mit `groesser<double>(3, 2.5)`.':
+'A template with **one** type parameter `T` describes a family of functions; the compiler generates one per type used. `groesser(3, 7)` fixes `T = int`, `groesser(2.5, 1.5)` fixes `T = double`. `groesser(3, 2.5)` would have two different candidates for the same `T` and is an error; it could be rescued with two type parameters or with `groesser<double>(3, 2.5)`.',
+
+'Vorhersagen, was zwei getrennte Aufrufe schreiben, und erkennen, warum ein gemischter nicht uebersetzt.':
+'Predict what two separate calls print, and see why a mixed one does not compile.',
+
+'Verglichen wird mit einer von Hand je Typ geschriebenen Fassung, nicht mit Vererbung. Gefragt sind die Kosten zur **Laufzeit**, nicht beim Uebersetzen: Der Uebersetzer erzeugt denselben Code, also null.\n\nBei Vererbung kostet jeder Aufruf einen Sprung ueber eine Tabelle -- und schlimmer als der Sprung ist, dass er das Einsetzen an Ort und Stelle verhindert und damit das Vektorisieren der inneren Schleife.':
+'The comparison is against a version written out by hand per type, not against inheritance. What is asked is the cost at **run time**, not at compile time: the compiler produces the same code, so none.\n\nWith inheritance every call costs a jump through a table -- and worse than the jump is that it prevents inlining and with it the vectorisation of the inner loop.',
+
+'Sehen, warum numerischer C++-Code Templates nimmt und nicht virtuelle Aufrufe.':
+'See why numerical C++ uses templates and not virtual calls.',
+
+'Dasselbe Maximum wie in C, nur fuer jeden vergleichbaren Typ: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`, Start bei `v[0]`.\n\n`v.size()` liefert `std::size_t`, eine **vorzeichenlose** Zahl; der Zaehler braucht denselben Typ. Das hat eine eigene Falle: `for (std::size_t i = v.size()-1; i >= 0; --i)` endet nie, weil `i` nach null auf die groesste Zahl springt.':
+'The same maximum as in C, only for every comparable type: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`, starting at `v[0]`.\n\n`v.size()` returns `std::size_t`, an **unsigned** number; the counter needs the same type. That carries a trap of its own: `for (std::size_t i = v.size()-1; i >= 0; --i)` never ends, because `i` jumps to the largest number after zero.',
+
+'`const std::vector<T>&` uebergibt ohne Kopie und mit der Zusage, nichts zu aendern.':
+'`const std::vector<T>&` passes without a copy and with the promise to change nothing.',
+
+'Eine Vorlage zusammensetzen, die fuer jeden vergleichbaren Typ gilt -- und dabei den richtigen Indextyp nehmen.':
+'Assemble a template that works for every comparable type -- and pick the right index type while doing so.',
+
+'`np.arange(5.0)` ist `[0, 1, 2, 3, 4]`. Ein Schnitt `a[anfang:ende]` nimmt die Indizes `[anfang, ende)` -- halboffen wie die C-Schleife --, negative Zahlen zaehlen vom Ende her. `a[1:-1]` ist also `[1, n-1)`: genau die inneren Zellen, die der Stern rechnet.':
+'`np.arange(5.0)` is `[0, 1, 2, 3, 4]`. A slice `a[start:end]` takes the indices `[start, end)` -- half-open like the C loop -- and negative numbers count from the end. So `a[1:-1]` is `[1, n-1)`: exactly the interior cells the stencil computes.',
+
+'Die Ausgabe zeigt `[1. 2. 3.]` mit Punkten, weil `arange(5.0)` Kommazahlen erzeugt; `arange(5)` ergaebe `[1 2 3]`.':
+'The output shows `[1. 2. 3.]` with dots because `arange(5.0)` produces floating-point numbers; `arange(5)` would give `[1 2 3]`.',
+
+'Den Schnitt lesen, der genau die inneren Zellen trifft -- die Raender fallen weg.':
+'Read the slice that hits exactly the interior cells -- the boundaries fall away.',
+
+'Derselbe explizite Stern wie in C, nur als **ein** Feldausdruck: `u[1:-1] += r·(u[:-2] - 2·u[1:-1] + u[2:])`. Die drei Schnitte sind `u_(i-1)`, `u_i`, `u_(i+1)` fuer alle inneren `i` gleichzeitig.\n\n`r = D·dt/h² = 0,4` liegt unter der Stabilitaetsgrenze `½`. Die Raender bleiben auf null (Dirichlet), deshalb faellt die Summe von 1 auf `0,989678` in 400 Schritten -- Waerme fliesst ab. Mit `u[0] = u[1]` und `u[-1] = u[-2]` nach jedem Schritt (Neumann) bliebe sie stehen.':
+'The same explicit stencil as in C, only as **one** array expression: `u[1:-1] += r·(u[:-2] - 2·u[1:-1] + u[2:])`. The three slices are `u_(i-1)`, `u_i`, `u_(i+1)` for all interior `i` at once.\n\n`r = D·dt/h² = 0.4` is below the stability limit `½`. The boundaries stay at zero (Dirichlet), so the sum falls from 1 to `0.989678` in 400 steps -- heat flows out. With `u[0] = u[1]` and `u[-1] = u[-2]` after each step (Neumann) it would stay.',
+
+'Stab mit `n = 101` Zellen, anfangs kalt, eine Einheit Waerme in der Mittelzelle; die Enden auf fester Temperatur 0.':
+'A rod of `n = 101` cells, initially cold with one unit of heat in the middle cell; the ends held at temperature 0.',
+
+'Die Schleife ueber die Zellen durch einen Feldausdruck ersetzen, der dieselben inneren Zellen trifft wie der C-Code.':
+'Replace the loop over the cells by one array expression that hits the same interior cells as the C code.',
+
+'Verglichen werden **dieselben** Rechnungen ueber dieselben Zellen -- die Zahl der Gleitkommaoperationen ist gleich. Verschieden ist, was drumherum passiert: In Python kostet jeder Durchlauf Objektverwaltung, beim Feldausdruck laeuft die Schleife einmal in uebersetztem C.\n\nDazu der Speicherzugriff: Ein NumPy-Feld liegt zusammenhaengend, der Prozessor holt ganze Zeilen in den Zwischenspeicher; eine Python-Liste enthaelt Verweise auf Objekte, die irgendwo liegen. Deshalb bringt NumPy bei kleinen Feldern wenig und bei grossen sehr viel.':
+'What is compared are **the same** computations over the same cells -- the number of floating-point operations is equal. What differs is everything around them: in Python every iteration costs object management, whereas the array expression runs the loop once in compiled C.\n\nOn top of that comes memory access: a NumPy array lies contiguously and the processor fetches whole lines into cache; a Python list holds references to objects lying anywhere. That is why NumPy gains little on small arrays and a great deal on large ones.',
+
+'Den Grund benennen -- und zwar den richtigen, nicht „NumPy ist eben schneller“.':
+'Name the reason -- the right one, not “NumPy is simply faster”.',
+
+'Advektionsgleichung `∂a/∂t + v·∂a/∂x = 0` mit `v > 0`. Die Loesung ist `a(x, t) = a_0(x - v·t)`: Das Profil wird nur verschoben, nie gedaempft.\n\nZentrale Ableitung, `(a_(i+1) - a_(i-1))/(2h)`: von Neumann liefert `g = 1 - i·C·sin(k·h)`, also `|g|² = 1 + C²·sin²(k·h) > 1` fuer jedes `C > 0` -- **unbedingt instabil**, obwohl der Abbruchfehler `O(h²)` ist.\n\nAufwind, `(a_i - a_(i-1))/h`: `|g| ≤ 1` fuer `0 ≤ C ≤ 1`. Nur erste Ordnung, aber stabil -- und es nimmt die Information von dort, wo sie physikalisch herkommt.':
+'The advection equation `∂a/∂t + v·∂a/∂x = 0` with `v > 0`. Its solution is `a(x, t) = a_0(x - v·t)`: the profile is only shifted, never damped.\n\nCentral derivative, `(a_(i+1) - a_(i-1))/(2h)`: von Neumann gives `g = 1 - i·C·sin(k·h)`, so `|g|² = 1 + C²·sin²(k·h) > 1` for every `C > 0` -- **unconditionally unstable**, even though its truncation error is `O(h²)`.\n\nUpwind, `(a_i - a_(i-1))/h`: `|g| ≤ 1` for `0 ≤ C ≤ 1`. Only first order, but stable -- and it takes its information from where it physically comes from.',
+
+'Reiner Transport mit fester Geschwindigkeit `v`: keine Diffusion, die etwas daempfen koennte, keine Quelle. Was stromabwaerts liegt, kann den Wert hier nicht beeinflussen -- genau das nimmt die zentrale Ableitung trotzdem an.':
+'Pure transport at a fixed speed `v`: no diffusion that could damp anything, no source. What lies downstream cannot influence the value here -- which is exactly what the central derivative assumes anyway.',
+
+'Sehen, dass Fehlerordnung und Stabilitaet zwei verschiedene Fragen sind: Das genauere Verfahren ist hier das unbrauchbare.':
+'See that order of accuracy and stability are two different questions: the more accurate scheme is the unusable one here.',
+
+'Courant-Zahl `C = v·dt/h`. Das Aufwindverfahren ist stabil fuer `C ≤ 1`; anschaulich heisst das, die Stroemung darf in einem Schritt hoechstens eine Zelle weit tragen -- sonst holt sich der Stern seine Information aus einer Zelle, aus der sie noch nicht gekommen ist.\n\nBei `C = 1,5` ist `|g| > 1`, und der Fehler waechst geometrisch: nach 40 Schritten steht `7,789·10^10` im Feld. Das ist keine Ungenauigkeit mehr, sondern eine gesprengte Rechnung.':
+'The Courant number is `C = v·dt/h`. Upwind is stable for `C ≤ 1`; in plain terms, the flow may carry at most one cell per step -- otherwise the stencil fetches its information from a cell the information has not reached yet.\n\nAt `C = 1.5` we have `|g| > 1` and the error grows geometrically: after 40 steps the field holds `7.789·10^10`. That is no longer inaccuracy, it is a computation blown apart.',
+
+'41 Zellen, ein rechteckiger Block der Hoehe 1 auf dem Viertel bis zur Haelfte des Gebiets, Raender auf null. Physikalisch duerfte sich der Block nur verschieben.':
+'41 cells, a rectangular block of height 1 from a quarter to half of the domain, boundaries at zero. Physically the block should only shift.',
+
+'Sehen, was eine verletzte CFL-Bedingung anrichtet -- und dass es keine Frage der Genauigkeit ist.':
+'See what a violated CFL condition does -- and that it is not a matter of accuracy.',
+
+'Inkompressible Stroemung: Die Dichte ist konstant, damit schrumpft die Kontinuitaetsgleichung `∂ρ/∂t + div(ρu) = 0` auf die **Zwangsbedingung** `div u = 0`.\n\nDer Druck ist der Lagrange-Multiplikator dazu. Im Zeitschritt (Chorin): erst ein Zwischenfeld `u*` ohne Druck, dann `∇²p = (ρ/dt)·div u*`, dann `u^(n+1) = u* - (dt/ρ)·∇p`. Nach dem Satz von Helmholtz und Hodge zerfaellt jedes Feld eindeutig in einen divergenzfreien Teil und einen Gradienten -- der Druckschritt zieht genau den Gradienten ab.':
+'Incompressible flow: the density is constant, which shrinks the continuity equation `∂ρ/∂t + div(ρu) = 0` to the **constraint** `div u = 0`.\n\nThe pressure is the Lagrange multiplier belonging to it. Within the time step (Chorin): first an intermediate field `u*` without pressure, then `∇²p = (ρ/dt)·div u*`, then `u^(n+1) = u* - (dt/ρ)·∇p`. By the Helmholtz-Hodge theorem every field splits uniquely into a divergence-free part and a gradient -- and the pressure step subtracts exactly the gradient.',
+
+'`p` ist hier **keine** thermodynamische Groesse: Es gibt keine Zustandsgleichung, die ihn mit Dichte und Temperatur verbindet. Er ist die Kraft, die noetig ist, damit nichts komprimiert wird. Bei kompressibler Stroemung ist es umgekehrt -- dort wird `p` mitgefuehrt, und der Zeitschritt muss die Schallgeschwindigkeit aufloesen.':
+'`p` here is **not** a thermodynamic quantity: there is no equation of state linking it to density and temperature. It is the force needed to keep anything from being compressed. In compressible flow it is the other way round -- there `p` is carried along, and the time step has to resolve the speed of sound.',
+
+'Sehen, wozu die Poisson-Gleichung im Zeitschritt ueberhaupt da ist.':
+'See what the Poisson equation inside the time step is there for.',
+
+'Der Druckschritt loest `∇²p = div u*` auf dem ganzen Gitter, einmal je Zeitschritt. Der diskrete Laplace-Operator hat die Kondition `O(1/h²)`, und Jacobi braucht entsprechend viele Durchlaeufe: Bei `N` Zellen je Richtung sind es `O(N²)`, also `O(N^4)` Arbeit je Zeitschritt. Bei einer Million Zellen ist das aussichtslos -- daher Mehrgitter (`O(N²)` Arbeit, also linear in der Zellzahl), konjugierte Gradienten oder FFT.':
+'The pressure step solves `∇²p = div u*` over the whole grid, once per time step. The discrete Laplacian has condition number `O(1/h²)`, and Jacobi needs a correspondingly large number of sweeps: with `N` cells per direction that is `O(N²)`, so `O(N^4)` work per time step. At a million cells that is hopeless -- hence multigrid (`O(N²)` work, linear in the cell count), conjugate gradients or an FFT.',
+
+'Jacobi **konvergiert** -- die Frage ist nicht Stabilitaet, sondern Geschwindigkeit. Zum Lernen ist er trotzdem die richtige Wahl: fuenf Zeilen, keine Matrix, Zelle fuer Zelle nachrechenbar.':
+'Jacobi does **converge** -- the question is not stability but speed. For learning it is still the right choice: five lines, no matrix, checkable cell by cell.',
+
+'Erkennen, dass hier die Kosten entscheiden, und wissen, was stattdessen genommen wird.':
+'Recognise that cost decides here, and know what is used instead.',
+
+'`print!` schreibt ohne Zeilenumbruch, `println!` mit -- der Unterschied steht im Namen und nicht in der Zeichenkette. Die Ausgabe wird zeilenweise wirklich hinausgeschrieben; wer den Fortschritt einer langen Rechnung ohne Umbruch ausgibt, sieht minutenlang nichts.':
+'`print!` writes without a line break, `println!` with one -- the difference is in the name and not in the string. Output is actually flushed line by line; print the progress of a long computation without a break and you see nothing for minutes.',
+
+'Gefragt ist die **Genauigkeit**, nicht die Breite: `{:.3}` sind drei Nachkommastellen, `{:3}` waeren drei Zeichen Feldbreite. Die C-Form `%.3f` geht nicht, weil `println!` seine Vorlage beim Uebersetzen liest und dabei jeden Platzhalter mit seinem Wert zusammenbringt.':
+'What is asked for is the **precision**, not the width: `{:.3}` is three decimals, `{:3}` would be three characters of field width. The C form `%.3f` does not work, because `println!` reads its template at compile time and pairs every placeholder with its value there.',
+
+'Den Platzhalter fuer drei Nachkommastellen nennen.':
+'Name the placeholder for three decimals.',
+
+'Verglichen wird Zeichen fuer Zeichen, der Zeilenumbruch gehoert dazu. Kein `#include` noetig und kein `return 0;`.':
+'The comparison is character by character, and the line break counts. No `#include` is needed and no `return 0;`.',
+
+'Den kleinsten Rust-Rumpf schreiben, der eine Zeile ausgibt.':
+'Write the smallest Rust skeleton that prints one line.',
+
+'Dieselben zwei Divisionen wie in C: `7/2 = 3` in den ganzen Zahlen, `3,5` in `F`. Der Unterschied ist, dass Rust **nicht befoerdert**: Es gibt keine stillschweigende Umwandlung des kleineren Typs, jede Umwandlung muss dastehen (`as f64`). `a as f64 / b` waere schon ein Fehler -- links `F`, rechts ganze Zahl.':
+'The same two divisions as in C: `7/2 = 3` in the integers, `3.5` in `F`. The difference is that Rust **does not promote**: there is no silent conversion of the smaller type, every conversion has to be written down (`as f64`). `a as f64 / b` would already be an error -- `F` on the left, an integer on the right.',
+
+'Beide Zeilen vorhersagen und den Unterschied benennen: dieselbe Falle wie in C, nur in einer Sprache, die das Schweigen nicht zulaesst.':
+'Predict both lines and name the difference: the same trap as in C, only in a language that does not let it pass silently.',
+
+'Gebiet der Laenge 1 in `n = 10` Zellen, `h = 1/n = 0,1`. Zwei der falschen Zeilen sind Uebersetzungsfehler, weil `f64` und ganze Zahl sich nicht mischen. Eine uebersetzt und liefert trotzdem null: `(1 / n) as f64` rechnet erst in den ganzen Zahlen und wandelt dann die 0 um.\n\nMerksatz wie in C: **Der Typ des Ergebnisses entsteht im Ausdruck, nicht bei der Zuweisung.**':
+'A domain of length 1 in `n = 10` cells, `h = 1/n = 0.1`. Two of the wrong lines are compile errors, because `f64` and integers do not mix. One does compile and still gives zero: `(1 / n) as f64` computes in the integers first and then converts the 0.\n\nThe maxim is the same as in C: **the type of the result arises in the expression, not at the assignment.**',
+
+'Die Zeile finden, die wirklich 0,1 ergibt, und die Falle in Rust-Kleidung erkennen.':
+'Find the line that really gives 0.1, and recognise the trap in Rust clothing.',
+
+'`summe/anzahl = 7/2`; das Ergebnis liegt nicht in den ganzen Zahlen, also muessen **beide** Seiten nach `f64`. Wer es ohne `as` haben will, schreibt die Werte gleich als Kommazahlen -- in einem Loeser ist das die uebliche Antwort: Zellzahlen bleiben `usize`, alles Gerechnete ist von Anfang an `f64`.':
+'`summe/anzahl = 7/2`; the result is not an integer, so **both** sides have to go to `f64`. If you would rather avoid `as`, write the values as floating-point numbers to begin with -- in a solver that is the usual answer: cell counts stay `usize`, everything computed is `f64` from the start.',
+
+'Die Vorlage gibt die Zahlen einzeln aus, damit sie ueberhaupt uebersetzt; gefragt ist eine einzige Zeile mit der Rechnung.':
+'The template prints the numbers separately so that it compiles at all; what is asked for is a single line with the computation.',
+
+'Beide Seiten umwandeln und mit drei Nachkommastellen ausgeben.':
+'Convert both sides and print with three decimals.',
+
+'Ein `Vec` ist nicht `Copy`: Die Zuweisung **verschiebt** ihn, danach gilt der alte Name nicht mehr. Dahinter steht die Freigabe -- gaebe es zwei gueltige Namen fuer denselben Speicherblock, muesste zur Laufzeit jemand mitzaehlen, wer als Letzter geht. Genau diese Zaehlung spart Rust, und dafuer braucht es eine Regel, die beim Uebersetzen greift.':
+'A `Vec` is not `Copy`: assignment **moves** it, and afterwards the old name is no longer valid. Behind that stands the release of memory -- if there were two valid names for the same block, someone would have to keep count at run time of who leaves last. Rust saves exactly that count, and for it needs a rule that bites at compile time.',
+
+'Den Grund fuer den Uebersetzungsfehler nennen und ihn von den naheliegenden falschen Erklaerungen trennen.':
+'Name the reason for the compile error and separate it from the plausible wrong explanations.',
+
+'Die Grenze verlaeuft dort, wo eine Kopie teuer oder gefaehrlich wuerde: Zahlen sind `Copy`, sie liegen vollstaendig im Register. Ein `Vec` haette danach zwei Besitzer desselben Speicherblocks -- also wird er verschoben. Eigene Strukturen sind deshalb standardmaessig nicht `Copy`; man kann es anfordern, wenn alle Felder es sind.':
+'The line runs where a copy would become expensive or dangerous: numbers are `Copy`, they fit entirely into a register. A `Vec` would afterwards have two owners of the same memory block -- so it is moved. Structures of your own are therefore not `Copy` by default; you can ask for it when all their fields are.',
+
+'`a` ist hier eine ganze Zahl, kein `Vec`.':
+'`a` is an integer here, not a `Vec`.',
+
+'Sehen, wo die Grenze zwischen Kopieren und Verschieben verlaeuft.':
+'See where the line between copying and moving runs.',
+
+'Gebraucht werden wirklich **zwei** Gitter zu je sieben Zellen, also `clone()`: ein zweiter Wert, Aufwand `O(n)`. `&u` waere `O(1)` und gaebe nur einen zweiten Blick auf dasselbe. Die Frage an jeder solchen Stelle lautet: zweiter Wert oder zweiter Blick?':
+'What is really needed are **two** grids of seven cells each, so `clone()`: a second value, `O(n)` work. `&u` would be `O(1)` and would give only a second look at the same one. The question at every such place is: a second value, or a second look?',
+
+'Die Entscheidung bewusst treffen statt sie vom Uebersetzer erzwingen zu lassen.':
+'Make the decision deliberately instead of having the compiler force it.',
+
+'Die Regel: beliebig viele `&` gleichzeitig, oder **ein** `&mut` und sonst nichts. Formal ist das die Bedingung, unter der kein Schreibzugriff mit einem anderen Zugriff ueberlappt.\n\nDieselbe Bedingung macht ein Programm auf mehreren Kernen richtig -- deshalb deckt die Pruefung, die hier einen Fehler im Einprozessorprogramm verhindert, auch Datenrennen mit ab.':
+'The rule: any number of `&` at once, or **one** `&mut` and nothing else. Formally that is the condition under which no write access overlaps with any other access.\n\nThe same condition makes a program correct on several cores -- which is why the check that prevents an error in the single-processor program covers data races as well.',
+
+'Die erlaubte Kombination nennen und wissen, warum sie es ist.':
+'Name the permitted combination and know why it is the one.',
+
+'`&mut f64` ist ein Verweis, den man beschreiben darf; `*x = *x * 2.0` schreibt in die Variable des Aufrufers -- derselbe Stern wie in C. Beim Lesen in Rechnungen darf er meist entfallen, beim Schreiben nie.':
+"`&mut f64` is a reference you are allowed to write to; `*x = *x * 2.0` writes into the caller's variable -- the same star as in C. Reading inside computations it may usually be omitted, writing never.",
+
+'`a` startet bei 2,5. Der Anzeigedruck `{}` schreibt die kuerzeste Form, die die Zahl zurueckliest -- also `5` und nicht `5.0`; `{:.1}` gaebe `5.0`.':
+'`a` starts at 2.5. The display format `{}` writes the shortest form that reads the number back -- so `5` and not `5.0`; `{:.1}` would give `5.0`.',
+
+'Vorhersagen, was ankommt: der Wert **und** seine Schreibweise.':
+'Predict what comes out: the value **and** its spelling.',
+
+'Dasselbe Maximum wie in C: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`. Der Startwert muss `v[0]` sein und nicht `0.0` -- sonst waere das Maximum eines Feldes aus lauter negativen Werten null. Vier Werte, das Maximum ist 9,0.':
+'The same maximum as in C: `M_0 = v_0`, `M_k = max(M_(k-1), v_k)`. The starting value has to be `v[0]` and not `0.0` -- otherwise the maximum of an array of nothing but negative values would be zero. Four values, the maximum is 9.0.',
+
+'`v` wird nur gelesen, deshalb `&Vec<f64>`. Zwei Rust-Eigenheiten stecken in der Loesung: `m` braucht `mut`, und die letzte Zeile ohne Semikolon **ist** der Rueckgabewert -- ein Block ist in Rust ein Ausdruck.':
+'`v` is only read, hence `&Vec<f64>`. Two Rust peculiarities sit in the solution: `m` needs `mut`, and the last line without a semicolon **is** the return value -- a block is an expression in Rust.',
+
+'Das Maximum ueber einen geliehenen Vektor finden.':
+'Find the maximum over a borrowed vector.',
+
+'Der Schritt liest aus dem alten Feld und schreibt in das neue: `&Vec<f64>` und `&mut Vec<f64>`. Die Signatur ist damit die Dokumentation -- in C stuende dort zweimal `double *`.\n\nNebenbei faellt ein ganzer Fehler weg: `schritt(&u, &mut u, r)` wird abgelehnt, weil `&` und `&mut` auf dieselbe Variable nicht zusammengehen. Genau dieser Aufruf ist in C erlaubt und ergibt still das Gauss-Seidel-Verfahren statt des expliziten.':
+'The step reads from the old field and writes into the new one: `&Vec<f64>` and `&mut Vec<f64>`. The signature is thereby the documentation -- in C it would say `double *` twice.\n\nIncidentally a whole class of error falls away: `schritt(&u, &mut u, r)` is rejected, because `&` and `&mut` on the same variable do not go together. That very call is legal in C and silently gives the Gauss-Seidel scheme instead of the explicit one.',
+
+'Lesen, was die Signatur ueber das Verfahren sagt -- und was sie ausschliesst.':
+'Read what the signature says about the method -- and what it rules out.',
+
+'Ein `Vec` besteht aus drei Zahlen: Zeiger, Laenge, Platz. `std::mem::swap` tauscht genau diese drei, Aufwand `O(1)` unabhaengig von der Zellzahl -- die Zellen selbst werden nicht angefasst. `u = w.clone()` waere dagegen `O(n)` je Zeitschritt.':
+'A `Vec` consists of three numbers: pointer, length, capacity. `std::mem::swap` exchanges exactly those three, `O(1)` work regardless of the cell count -- the cells themselves are not touched. `u = w.clone()` would be `O(n)` per time step.',
+
+'Vorhersagen, was nach dem Tausch in beiden Feldern steht, und sehen, warum der Tausch in einer Zeitschleife nichts kostet.':
+'Predict what stands in both fields after the swap, and see why the swap costs nothing inside a time loop.',
+
+'Derselbe explizite Drei-Punkt-Stern wie im C-Kapitel: `w_i = u_i + r·(u_(i-1) - 2u_i + u_(i+1))` fuer die inneren Zellen. `r = 0,4` liegt unter der Stabilitaetsgrenze `½`; die Raender bleiben auf null, deshalb faellt die Summe von 1 auf `0,771801`, und in der Mitte stehen `0,031086`.\n\nEs sind **dieselben Zahlen wie in C** -- dieselbe Arithmetik, dieselbe Rundung. Die Sprache aendert am Ergebnis nichts. Sie aendert die Fehlersuche davor: `2.0` muss `2.0` heissen und nicht `2`, und ein Index daneben bricht mit Meldung ab.':
+'The same explicit three-point stencil as in the C chapter: `w_i = u_i + r·(u_(i-1) - 2u_i + u_(i+1))` for the interior cells. `r = 0.4` is below the stability limit `½`; the boundaries stay at zero, so the sum falls from 1 to `0.771801` and `0.031086` stands in the middle.\n\nThese are **the same numbers as in C** -- the same arithmetic, the same rounding. The language changes nothing about the result. What it changes is the debugging before it: `2.0` has to be `2.0` and not `2`, and an index off the end stops with a message.',
+
+'Stab mit 41 Zellen, anfangs kalt, eine Einheit Waerme in der Mitte, Enden auf fester Temperatur 0. 200 Schritte.':
+'A rod of 41 cells, initially cold with one unit of heat in the middle, ends held at temperature 0. 200 steps.',
+
+'Den Stern in `schritt` einbauen und nachrechnen, dass C und Rust bis auf die letzte Stelle dasselbe liefern.':
+'Build the stencil into `schritt` and check that C and Rust give the same thing down to the last digit.',
+
+'Eine eigene Struktur ist nicht `Copy`. `energie(p)` wuerde sie verschieben, und die naechste Zeile in `main` waere ein Fehler; `&Teilchen` leiht nur. Der Nebeneffekt ist derselbe wie bei `const&` in C++: Es wird nichts kopiert -- und die Regel gilt unabhaengig davon, wie gross die Struktur ist.':
+'A structure of your own is not `Copy`. `energie(p)` would move it, and the next line in `main` would be an error; `&Teilchen` only borrows. The side effect is the same as with `const&` in C++: nothing is copied -- and the rule holds regardless of how big the structure is.',
+
+'Den Grund fuer das `&` nennen: Besitz, nicht Geschwindigkeit.':
+'Name the reason for the `&`: ownership, not speed.',
+
+'Symplektischer Schritt, und die Reihenfolge **ist** das Verfahren: `a = -x/m`, dann `v := v + a·dt`, dann `x := x + v·dt` mit dem **neuen** `v`. Wer `x` zuerst fortschreibt, hat das explizite Euler-Verfahren und eine Energie, die mit `(1 + dt²)` je Schritt waechst.':
+'A symplectic step, and the order **is** the method: `a = -x/m`, then `v := v + a·dt`, then `x := x + v·dt` with the **new** `v`. Advance `x` first and you have explicit Euler and an energy that grows by `(1 + dt²)` per step.',
+
+'Dieselbe Feder wie in Kapitel 3: `k = 1 N/m`, `m = 1 kg`, also `a = -x`. Keine Reibung.':
+'The same spring as in chapter 3: `k = 1 N/m`, `m = 1 kg`, hence `a = -x`. No friction.',
+
+'Rust hilft hier nicht -- es ist ein Fehler des Verfahrens, nicht der Sprache. Was es hilft: `p` ist als `&mut` gekennzeichnet, der Leser sieht also sofort, dass die Funktion den Zustand aendert.':
+'Rust does not help here -- it is an error of the method, not of the language. What it does help with: `p` is marked `&mut`, so the reader sees at once that the function changes the state.',
+
+'Den symplektischen Schritt in der richtigen Reihenfolge zusammensetzen.':
+'Assemble the symplectic step in the right order.',
+
+"Jetzt mit Masse in der Gleichung: `x'' = -(k/m)·x`, also `a = -x/m`. Die Kreisfrequenz ist `ω = √(k/m)`, die Schwingdauer `T = 2π/ω`.\n\nDie Energie ist `E = ½mv² + ½kx²`. Start bei `x = 1 m`, `v = 0`, also `E = ½·k·1² = 0,5 J` -- die Masse steht nicht darin, weil `v` null ist. Der symplektische Schritt haelt `E` in einem festen Band; `0,5004` ist kein Fehler, sondern dessen Breite.":
+"Now with the mass in the equation: `x'' = -(k/m)·x`, so `a = -x/m`. The angular frequency is `ω = √(k/m)`, the period `T = 2π/ω`.\n\nThe energy is `E = ½mv² + ½kx²`. Starting at `x = 1 m`, `v = 0`, so `E = ½·k·1² = 0.5 J` -- the mass does not appear because `v` is zero. The symplectic step keeps `E` inside a fixed band; `0.5004` is not an error but the width of that band.",
+
+'Feder mit `k = 1 N/m`, aber `m = 2 kg`: `ω = √(1/2) = 0,707 rad/s`, Schwingdauer `T = 8,9 s` -- die doppelte Masse schwingt langsamer. 400 Schritte zu `dt = 0,05 s` sind 20 s, also gut zwei Schwingungen.':
+'A spring with `k = 1 N/m` but `m = 2 kg`: `ω = √(1/2) = 0.707 rad/s`, period `T = 8.9 s` -- twice the mass oscillates more slowly. 400 steps of `dt = 0.05 s` are 20 s, a good two oscillations.',
+
+'`m` steht in der Struktur und wird nicht als zweiter Parameter durchgereicht -- genau dafuer sind Strukturen da.':
+'`m` lives in the structure and is not passed as a second parameter -- that is exactly what structures are for.',
+
+'Die Masse in die Struktur aufnehmen und sehen, dass die Energieerhaltung auch mit `m ≠ 1` haelt.':
+'Take the mass into the structure and see that energy conservation holds with `m ≠ 1` as well.',
+
+})

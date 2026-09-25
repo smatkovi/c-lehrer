@@ -30,6 +30,42 @@ from codeerklaerungen import CODEERKLAERUNGEN
 from kursformeln import KURSFORMELN
 
 
+# ---------------------------------------------------------------------------
+# Annahmen und Ziel jeder Aufgabe.
+#
+# Eine Aufgabe ohne genannte Annahmen ist ein Raetsel: Wer nicht weiss, dass
+# `int` hier 32 Bit hat, dass die Masse 1 kg ist oder dass ohne Reibung
+# gerechnet wird, raet nicht schlechter -- er raet nur an einer anderen
+# Stelle.  Und wer das Ziel nicht kennt, weiss nicht, wann er fertig ist.
+#
+# Getrennt nach "mathematisch" (das Modell mit seinen Formeln), "physikalisch"
+# (woher es kommt und was weggelassen wurde) und dem Rest -- in dieser
+# Reihenfolge wird es auch angezeigt.  Alles steht in aufgabenrahmen.py, nach
+# Lektion und Nummer geordnet, damit die Aufgaben hier lesbar bleiben.  Fehlt ein Eintrag, bleibt das Feld leer und
+# die Oberflaeche zeigt nichts an.
+from aufgabenrahmen import RAHMEN
+
+
+def _rahmen(ident, aufgaben):
+    """Haengt Annahmen und Ziel an, geordnet nach Lektion und Nummer.
+
+    Nach dem Fragetext zu ordnen ginge nicht: "Was schreibt dieses
+    Programm?" steht siebenmal im Kurs, jedesmal vor einem anderen
+    Programm.
+
+    Leere Felder werden gar nicht erst gesetzt -- dann zeigt die
+    Oberflaeche die Ueberschrift nicht, statt eine leere anzuzeigen.
+    """
+    for i, aufgabe in enumerate(aufgaben):
+        eintrag = RAHMEN.get((ident, i))
+        if not eintrag:
+            continue
+        for feld in ("mathematisch", "physikalisch", "annahmen", "ziel"):
+            if eintrag[feld]:
+                aufgabe[feld] = eintrag[feld]
+    return aufgaben
+
+
 def mc(q, options, answer, why, code=""):
     """Read something, pick the right statement about it."""
     return {"kind": "mc", "q": q, "code": code, "options": options,
@@ -84,7 +120,8 @@ def lesson(ident, title, concepts, text, example, exercises, output="",
     # Erzeuger, nachdem beide ihr Sprachpaar haben.
     return {"id": ident, "title": title, "concepts": concepts, "text": text,
             "codeerklaerung": CODEERKLAERUNGEN.get(ident, ""),
-            "example": example, "output": output, "exercises": exercises,
+            "example": example, "output": output,
+            "exercises": _rahmen(ident, exercises),
             "formeln": formeln or KURSFORMELN.get(ident, [])}
 
 

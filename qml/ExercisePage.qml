@@ -155,6 +155,19 @@ Page {
                 color: Style.text
             }
 
+            Rahmen {
+                width: parent.width
+                sprache: course.language
+                mathematisch: (page.aufgabe.leer || page.aufgabe.mathematisch === undefined)
+                                  ? "" : page.aufgabe.mathematisch
+                physikalisch: (page.aufgabe.leer || page.aufgabe.physikalisch === undefined)
+                                  ? "" : page.aufgabe.physikalisch
+                annahmen: (page.aufgabe.leer || page.aufgabe.annahmen === undefined)
+                              ? "" : page.aufgabe.annahmen
+                ziel: (page.aufgabe.leer || page.aufgabe.ziel === undefined)
+                          ? "" : page.aufgabe.ziel
+            }
+
             Bild {
                 width: parent.width
                 name: (page.aufgabe.leer || page.aufgabe.bild === undefined)

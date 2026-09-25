@@ -109,6 +109,19 @@ Page {
                 color: Style.text
             }
 
+            Rahmen {
+                width: parent.width
+                sprache: course.language
+                mathematisch: (page.karte.leer || page.karte.mathematisch === undefined)
+                                  ? "" : page.karte.mathematisch
+                physikalisch: (page.karte.leer || page.karte.physikalisch === undefined)
+                                  ? "" : page.karte.physikalisch
+                annahmen: (page.karte.leer || page.karte.annahmen === undefined)
+                              ? "" : page.karte.annahmen
+                ziel: (page.karte.leer || page.karte.ziel === undefined)
+                          ? "" : page.karte.ziel
+            }
+
             Bild {
                 width: parent.width
                 name: page.karte.bild === undefined ? "" : page.karte.bild
