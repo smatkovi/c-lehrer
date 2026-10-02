@@ -17,6 +17,9 @@ PageStackWindow {
         // Die Formelbilder liegen neben dem qml-Ordner; Style.rich() setzt
         // sie als <img> in den Text und braucht dafuer die Adresse.
         Style.bilderPfad = Qt.resolvedUrl("../bilder/")
+        // Hochkant ist die Seite so breit wie die kurze Schirmkante.
+        Style.breiteMax = Math.min(screen.displayWidth, screen.displayHeight)
+                          - 2 * Style.pad
     }
 
     Rectangle {

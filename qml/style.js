@@ -26,6 +26,18 @@ var gap       = 12;
 // eine Bibliothek kennt ihre eigene Adresse nicht, und rich() wird von
 // zwei Dutzend Stellen aufgerufen, die alle keinen Pfad kennen sollen.
 var bilderPfad = "";
+// Breiter als die Seite darf kein Formelbild werden; main.qml traegt die
+// Breite ein, die zwischen den Seitenraendern bleibt. Die Bilder kommen in
+// natuerlicher Groesse, verkleinert wird erst hier -- so bleibt dieselbe
+// Formel auf einem breiten Schirm gross und wird nur hier klein.
+var breiteMax = 0;
+
+function bildmasse(b, h) {
+    var f = 1.0;
+    if (breiteMax > 0 && b > breiteMax)
+        f = breiteMax / b;
+    return { breite: Math.round(b * f), hoehe: Math.round(h * f) };
+}
 
 var titleSize = 30;
 var headSize  = 22;
@@ -59,8 +71,9 @@ function rich(source) {
     // springt.
     out = out.replace(/\[\[formel:([A-Za-z0-9_-]+):(\d+):(\d+)\]\]/g,
                       function (ganz, name, b, h) {
+                          var m = bildmasse(b, h);
                           return "<img src='" + bilderPfad + name + ".png' width='"
-                                 + b + "' height='" + h + "'>";
+                                 + m.breite + "' height='" + m.hoehe + "'>";
                       });
     out = out.replace(/\n\n/g, "<br><br>");
     out = out.replace(/\n/g, "<br>");
