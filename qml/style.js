@@ -22,6 +22,11 @@ var mono      = "Andale Mono";
 var pad       = 16;
 var gap       = 12;
 
+// Wo die gesetzten Formeln liegen. main.qml traegt es beim Start ein --
+// eine Bibliothek kennt ihre eigene Adresse nicht, und rich() wird von
+// zwei Dutzend Stellen aufgerufen, die alle keinen Pfad kennen sollen.
+var bilderPfad = "";
+
 var titleSize = 30;
 var headSize  = 22;
 var bodySize  = 19;
@@ -47,6 +52,16 @@ function rich(source) {
     out = out.replace(/\*([^*\n]+)\*/g, "<i>$1</i>");
     out = out.replace(/`([^`]+)`/g,
                       "<span style='font-family:" + mono + "; color:" + accent + "'>$1</span>");
+    // Gesetzte Formeln im Fliesstext. make-kurs.py hat $...$ durch
+    // [[formel:<name>:<breite>:<hoehe>]] ersetzt; hier wird daraus ein
+    // Bild in der Zeile. Breite und Hoehe stehen im Marker, weil Rich Text
+    // ein Bild ohne Masse erst nach dem Laden setzt und der Absatz dann
+    // springt.
+    out = out.replace(/\[\[formel:([A-Za-z0-9_-]+):(\d+):(\d+)\]\]/g,
+                      function (ganz, name, b, h) {
+                          return "<img src='" + bilderPfad + name + ".png' width='"
+                                 + b + "' height='" + h + "'>";
+                      });
     out = out.replace(/\n\n/g, "<br><br>");
     out = out.replace(/\n/g, "<br>");
     return out;

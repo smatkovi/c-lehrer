@@ -12,7 +12,12 @@ PageStackWindow {
     showToolBar: true
     initialPage: StartPage { }
 
-    Component.onCompleted: theme.inverted = true
+    Component.onCompleted: {
+        theme.inverted = true
+        // Die Formelbilder liegen neben dem qml-Ordner; Style.rich() setzt
+        // sie als <img> in den Text und braucht dafuer die Adresse.
+        Style.bilderPfad = Qt.resolvedUrl("../bilder/")
+    }
 
     Rectangle {
         // The components draw their own background per page; this one keeps
