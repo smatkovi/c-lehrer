@@ -127,6 +127,14 @@ Page {
                 name: page.karte.bild === undefined ? "" : page.karte.bild
             }
 
+            // Dieselbe Wolke echt, vorn neben der Zeichnung und hinten
+            // noch einmal bei der Begruendung.
+            Fotos {
+                width: parent.width
+                sprache: course.language
+                fotos: page.karte.fotos === undefined ? [] : page.karte.fotos
+            }
+
             CodeBlock {
                 width: parent.width
                 visible: page.karte.code !== undefined && page.karte.code !== ""
@@ -270,6 +278,12 @@ Page {
                         width: parent.width
                         name: page.karte.skizze === undefined
                               ? "" : page.karte.skizze
+                    }
+                    Fotos {
+                        width: parent.width
+                        sprache: course.language
+                        fotos: page.karte.fotos === undefined
+                               ? [] : page.karte.fotos
                     }
                 }
             }

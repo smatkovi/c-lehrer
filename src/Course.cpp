@@ -279,6 +279,23 @@ void Course::resetExercise()
     emit runChanged();
 }
 
+/* Die Fotos eines Kursteils, mit uebersetztem Hinweis.  Dateiname und Masse
+   sind in jeder Sprache dieselben; der Hinweis -- der Satz, der sagt, wohin
+   zu schauen ist -- steht zweisprachig im Kurs.  Fehlt der Block, kommt eine
+   leere Liste zurueck: Nur der Wolkenkurs fuehrt Fotos, die Programmierkurse
+   teilen sich dieselbe Oberflaeche. */
+static QVariantList fotosAus(const QVariantMap &quelle, const Curriculum *kurs)
+{
+    QVariantList fotos;
+    for (const QVariant &value : quelle.value(QLatin1String("fotos")).toList()) {
+        QVariantMap eintrag = value.toMap();
+        eintrag.insert(QLatin1String("hinweis"),
+                       kurs->text(eintrag.value(QLatin1String("hinweis"))));
+        fotos.append(eintrag);
+    }
+    return fotos;
+}
+
 QVariantMap Course::lesson() const
 {
     QVariantMap out;
@@ -322,14 +339,7 @@ QVariantMap Course::lesson() const
        steht zweisprachig im Kurs und wird hier uebersetzt.  Fehlt der Block
        ganz, bleibt die Liste leer: Nur der Wolkenkurs hat Fotos, die
        Programmierkurse teilen sich dieselbe Oberflaeche. */
-    QVariantList fotos;
-    for (const QVariant &value : source.value(QLatin1String("fotos")).toList()) {
-        QVariantMap eintrag = value.toMap();
-        eintrag.insert(QLatin1String("hinweis"),
-                       m_course->text(eintrag.value(QLatin1String("hinweis"))));
-        fotos.append(eintrag);
-    }
-    out.insert(QLatin1String("fotos"), fotos);
+    out.insert(QLatin1String("fotos"), fotosAus(source, m_course));
     out.insert(QLatin1String("beispiel"), source.value(QLatin1String("beispiel")));
     out.insert(QLatin1String("ausgabe"), source.value(QLatin1String("ausgabe")));
     out.insert(QLatin1String("aufgaben"),
@@ -397,6 +407,11 @@ QVariantMap Course::exercise() const
                m_course->text(task.value(QLatin1String("herleitung"))));
     out.insert(QLatin1String("skizze"), task.value(QLatin1String("skizze")));
     out.insert(QLatin1String("bild"), task.value(QLatin1String("bild")));
+    /* Dieselbe Wolke echt, zweimal auf der Seite: ueber der Frage neben der
+       Zeichnung und noch einmal in der Loesung. Die Zeichnung steht ohnehin
+       ueber der Frage, also verraet das Foto daneben nichts Neues -- und
+       nach der Antwort hat man Zeit, wirklich hinzusehen. */
+    out.insert(QLatin1String("fotos"), fotosAus(task, m_course));
     out.insert(QLatin1String("nummer"), m_index + 1);
     out.insert(QLatin1String("gesamt"), tasks.size());
     out.insert(QLatin1String("geprueft"), m_checked);
@@ -758,6 +773,9 @@ QVariantMap Course::card() const
     out.insert(QLatin1String("frage"), m_course->text(task.value(QLatin1String("q"))));
     out.insert(QLatin1String("code"), task.value(QLatin1String("code")));
     out.insert(QLatin1String("bild"), task.value(QLatin1String("bild")));
+    /* Dieselbe Wolke echt -- auf der Karteikarte vorn neben der Zeichnung
+       und hinten noch einmal bei der Begruendung. */
+    out.insert(QLatin1String("fotos"), fotosAus(task, m_course));
     out.insert(QLatin1String("optionen"),
                m_course->textList(task.value(QLatin1String("options"))));
     out.insert(QLatin1String("antwort"),
