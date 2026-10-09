@@ -18,10 +18,12 @@ Rectangle {
     property variant formel: undefined
     property real bildBreite: formel === undefined ? 0 : (formel.breite || 0)
     property real bildHoehe: formel === undefined ? 0 : (formel.hoehe || 0)
-    // Breiter als der Platz wird verkleinert, schmaler bleibt es stehen:
-    // eine kurze Formel auf Spaltenbreite aufzublasen sieht nach Plakat aus.
+    // So gross wie die Formeln im Text (Style.skala haengt an der Schrift),
+    // und verkleinert, wenn das zu breit fuer den Kasten waere. Eine kurze
+    // Formel auf Kastenbreite aufzublasen sieht nach Plakat aus.
     property real skala: bildBreite > 0
-                         ? Math.min(1.0, (width - 2 * 12) / bildBreite) : 1.0
+                         ? Math.min(Style.skala, (width - 2 * 12) / bildBreite)
+                         : 1.0
 
     visible: formel !== undefined && formel.code !== undefined
     color: Style.codeBg

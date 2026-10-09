@@ -32,17 +32,41 @@ var bilderPfad = "";
 // Formel auf einem breiten Schirm gross und wird nur hier klein.
 var breiteMax = 0;
 
+// Wie gross eine gesetzte Formel neben der Schrift steht; main.qml traegt
+// es beim Start ein. Die Formeln sind fuer 17 Punkt bei 100 dpi gesetzt
+// (tools/formeln.py), ein Geviert misst also 23,6 Bildpunkte bei Skala 1 --
+// ohne diese Zeile stand jede Formel in der Groesse, in der sie gesetzt
+// wurde, und nicht in der Groesse der Zeile, in der sie steht.
+var skala = 1.0;
+
+// Etwas groesser als die Schrift daneben, weil Brueche, Indizes und
+// Exponenten im Bild kleiner ausfallen als die Grundlinie -- bei gleicher
+// Hoehe wirkt ein Bruch im Satz winzig. Dieselbe Rechnung wie in
+// harbour-lehrer/qml/stil.js, damit beide Fassungen gleich aussehen.
+var GEVIERT = 17 * 100 / 72;
+
+function skalaFuer(schriftgroesse) {
+    return 1.15 * schriftgroesse / GEVIERT;
+}
+
+// Breite und Hoehe eines gesetzten Bildes auf diesem Geraet: skaliert, und
+// wenn es dann breiter waere als die Seite, auf die Seite verkleinert.
 function bildmasse(b, h) {
-    var f = 1.0;
-    if (breiteMax > 0 && b > breiteMax)
+    var f = skala;
+    if (breiteMax > 0 && b * f > breiteMax)
         f = breiteMax / b;
     return { breite: Math.round(b * f), hoehe: Math.round(h * f) };
 }
 
-var titleSize = 30;
-var headSize  = 22;
-var bodySize  = 19;
-var smallSize = 16;
+// Die Lesegroessen sind Harmattans eigene: 24 Punkte fuer den Fliesstext.
+// Mit 19 war der ganze Kurs klein gesetzt -- und die gesetzten Formeln
+// standen mit ihm klein da, weil sie an der Schrift haengen (skalaFuer).
+// Programmtext bleibt bei 16: er soll in die Zeile passen, nicht gelesen
+// werden wie Prosa.
+var titleSize = 36;
+var headSize  = 28;
+var bodySize  = 24;
+var smallSize = 20;
 var codeSize  = 16;
 
 // Turns the little bit of markup the course text uses into rich text.

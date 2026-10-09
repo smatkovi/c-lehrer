@@ -20,6 +20,8 @@ PageStackWindow {
         // Hochkant ist die Seite so breit wie die kurze Schirmkante.
         Style.breiteMax = Math.min(screen.displayWidth, screen.displayHeight)
                           - 2 * Style.pad
+        // Und so gross wie die Zeile, in der sie steht.
+        Style.skala = Style.skalaFuer(Style.bodySize)
     }
 
     Rectangle {
