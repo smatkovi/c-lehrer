@@ -70,6 +70,14 @@ Page {
                       ? "" : page.lektion.bild
             }
 
+            // Und darunter dieselbe Wolke, wie sie wirklich aussieht.
+            Fotos {
+                width: parent.width
+                sprache: course.language
+                fotos: page.lektion.leer || page.lektion.fotos === undefined
+                       ? [] : page.lektion.fotos
+            }
+
             // Die Formeln der Lektion, jede zweimal: als Codezeile und
             // gesetzt. Sie stehen vor dem Beispiel, damit man die Zeilen
             // gleich darunter wiederfindet.
