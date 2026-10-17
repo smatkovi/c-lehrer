@@ -287,7 +287,7 @@ Page {
             Button {
                 width: parent.width
                 text: W.w("Noch einmal", course.language)
-                onClicked: course.startRecognition(0)
+                onClicked: course.startRecognition(page.ergebnis.gesamt)
             }
             Button {
                 width: parent.width

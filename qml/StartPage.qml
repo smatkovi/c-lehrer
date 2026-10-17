@@ -224,6 +224,20 @@ Page {
                 width: parent.width
                 text: course.recognitionTitle
                 visible: course.hasRecognition
+                // Eine Runde, nicht der ganze Stapel: zweihundert Bilder
+                // mal zwei Fragen waeren vierhundert Antworten am Stueck.
+                // Wer mehr will, tippt noch einmal.
+                onClicked: {
+                    course.startRecognition(20);
+                    pageStack.push(Qt.resolvedUrl("ErkennenPage.qml"));
+                }
+            }
+
+            Button {
+                width: parent.width
+                visible: course.hasRecognition
+                text: W.w("Alle Bilder", course.language)
+                      + " (" + course.recognitionCount + ")"
                 onClicked: {
                     course.startRecognition(0);
                     pageStack.push(Qt.resolvedUrl("ErkennenPage.qml"));
