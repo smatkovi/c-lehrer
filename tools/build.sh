@@ -47,7 +47,7 @@ LDFLAGS="--sysroot=$SYSROOT -static-libstdc++ -static-libgcc -Wl,-O1 \
  -Wl,--as-needed -Wl,--exclude-libs,ALL -Wl,--dynamic-linker=/lib/ld-linux.so.3"
 LIBS="-lQtDeclarative -lQtScript -lQtGui -lQtCore -lpthread"
 
-SOURCES="Json Checker Curriculum Placement Engine Runner Plotter Course main"
+SOURCES="Json Checker Curriculum Placement Erkennen Engine Runner Plotter Course main"
 MOC_HEADERS="Runner Course"
 
 cd "$OUT"

@@ -216,6 +216,29 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("CardPage.qml"))
             }
 
+            // Der Erkennungsmodus, wo der Kurs einen hat. Vor der
+            // Einstufung genauso: Bilder anschauen setzt keine Stufe
+            // voraus, und wer nur ueben will, soll nicht erst einen Test
+            // machen muessen.
+            Button {
+                width: parent.width
+                text: course.recognitionTitle
+                visible: course.hasRecognition
+                onClicked: {
+                    course.startRecognition(0);
+                    pageStack.push(Qt.resolvedUrl("ErkennenPage.qml"));
+                }
+            }
+
+            Text {
+                width: parent.width
+                visible: course.hasRecognition
+                wrapMode: Text.WordWrap
+                text: course.recognitionSubtitle
+                font.pixelSize: Style.smallSize
+                color: Style.dim
+            }
+
             Button {
                 width: parent.width
                 text: W.w("Kapitel", course.language)

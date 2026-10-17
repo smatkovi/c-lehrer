@@ -5,6 +5,7 @@
 // learner's own programs run in, as a child process.
 
 #include <QApplication>
+#include <QDeclarativeComponent>
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 #include <QDeclarativeError>
@@ -44,6 +45,33 @@ int main(int argc, char **argv)
 
     Plotter *plotter = new Plotter();          // the view takes ownership
     Course course(&curriculum, plotter);
+
+    /* "--qml-pruefen": jede QML-Datei einmal uebersetzen und sagen, welche
+       nicht laedt. Der Pruefer auf dem Entwicklungsrechner hilft hier nur
+       halb -- com.nokia.meego gibt es dort nicht, und gerade dessen
+       Elemente ("Switch hat kein clicked") fallen erst am Geraet auf.
+       Also am Geraet, ohne Fenster, in zwei Sekunden. */
+    if (argc > 1 && QLatin1String(argv[1]) == QLatin1String("--qml-pruefen")) {
+        QDeclarativeEngine engine;
+        engine.addImageProvider(QLatin1String("plot"), plotter);
+        engine.rootContext()->setContextProperty(QLatin1String("course"), &course);
+        const QDir qmlDir(root + QLatin1String("/qml"));
+        int schlecht = 0;
+        const QStringList dateien = qmlDir.entryList(
+                QStringList() << QLatin1String("*.qml"), QDir::Files, QDir::Name);
+        for (const QString &name : dateien) {
+            QDeclarativeComponent teil(&engine,
+                                       QUrl::fromLocalFile(qmlDir.filePath(name)));
+            if (teil.isError()) {
+                ++schlecht;
+                for (const QDeclarativeError &e : teil.errors())
+                    qWarning("FEHLER %s: %s", qPrintable(name),
+                             qPrintable(e.toString()));
+            }
+        }
+        qWarning("%d QML-Dateien, %d mit Fehler", dateien.size(), schlecht);
+        return schlecht ? 1 : 0;
+    }
 
     QDeclarativeView view;
     view.setResizeMode(QDeclarativeView::SizeRootObjectToView);
