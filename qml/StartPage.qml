@@ -253,6 +253,24 @@ Page {
                 color: Style.dim
             }
 
+            // Foto deuten, wo der Kurs ein Netz mitbringt: das eigene
+            // Himmelsfoto statt eines aus dem Stapel.
+            Button {
+                width: parent.width
+                text: course.classifierTitle
+                visible: course.hasClassifier
+                onClicked: pageStack.push(Qt.resolvedUrl("FotoPage.qml"))
+            }
+
+            Text {
+                width: parent.width
+                visible: course.hasClassifier
+                wrapMode: Text.WordWrap
+                text: course.classifierSubtitle
+                font.pixelSize: Style.smallSize
+                color: Style.dim
+            }
+
             Button {
                 width: parent.width
                 text: W.w("Kapitel", course.language)

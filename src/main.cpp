@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 
     Plotter *plotter = new Plotter();          // the view takes ownership
     Course course(&curriculum, plotter);
+    course.loadClassifier(root + QLatin1String("/data/modell.bin"));
 
     /* "--qml-pruefen": jede QML-Datei einmal uebersetzen und sagen, welche
        nicht laedt. Der Pruefer auf dem Entwicklungsrechner hilft hier nur
