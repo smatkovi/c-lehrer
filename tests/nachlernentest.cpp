@@ -5,7 +5,10 @@
 // Gebaut von tools/build-nachlernentest.sh, druckt am Ende "alles gut".
 #include "Nachlernen.h"
 
+#include <QBuffer>
 #include <QCoreApplication>
+#include <QDataStream>
+#include <QFile>
 #include <QDir>
 #include <QImage>
 #include <QTextStream>
@@ -98,6 +101,27 @@ void fuellen(Nachlernen *g, int jeKlasse)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+
+    /* Mit einem Pfad: nur diese Datei laden und sagen, was drin ist --
+       zum Nachsehen, ob eine echte Gelerntes-Datei vom Geraet lesbar ist. */
+    if (argc > 1) {
+        Nachlernen g;
+        QString f;
+        if (!g.laden(QString::fromLocal8Bit(argv[1]), &f)) {
+            aus << "nicht lesbar: " << f << "\n";
+            return 1;
+        }
+        aus << g.anzahl() << " Eintraege, " << g.brauchtNeurechnung().size()
+            << " nachzurechnen\n";
+        const QVariantList liste = g.eintraege();
+        for (int i = 0; i < liste.size(); ++i) {
+            const QVariantMap e = liste.at(i).toMap();
+            aus << "  " << e.value(QLatin1String("klasse")).toString()
+                << " quelle " << e.value(QLatin1String("quelle")).toInt()
+                << " sicherheit " << e.value(QLatin1String("sicherheit")).toInt() << "\n";
+        }
+        return 0;
+    }
     const QString ordner = QDir::tempPath() + QLatin1String("/nachlernentest");
     QDir().mkpath(ordner);
     const QString pfad = ordner + QLatin1String("/gelerntes.bin");
@@ -300,6 +324,83 @@ int main(int argc, char *argv[])
         pruefen(h.kopfLohnt(), QLatin1String("nach dem Laden lohnt es sich wieder"));
         QVector<float> w3, b3;
         pruefen(h.kopfNachtrainieren(&w3, &b3), QLatin1String("und geht"));
+    }
+
+    aus << "-- Fassung 1 der Datei (ohne Laenge) wird noch gelesen\n";
+    {
+        /* So schrieb Segelflug 2.11 / Sailfish 1.18.x: der Abdruck ohne
+           seine Laenge.  Die Eintraege muessen ankommen, die Abdruecke
+           nicht -- die rechnet die App aus den Bildern nach. */
+        const QString alt = ordner + QLatin1String("/fassung1.bin");
+        QFile a(alt);
+        pruefen(a.open(QIODevice::WriteOnly | QIODevice::Truncate),
+                QLatin1String("Fassung 1 schreiben"));
+        QDataStream s(&a);
+        s.setByteOrder(QDataStream::LittleEndian);
+        s.setFloatingPointPrecision(QDataStream::SinglePrecision);
+        s.writeRawData("WOLKENG1", 8);
+        const QByteArray kopf("{\"abdruck\":8,\"eintraege\":2,\"format\":1,"
+                              "\"klassen\":[\"cu-humilis\",\"stratocumulus\",\"cirrus\"],"
+                              "\"modell\":\"abc123\"}");
+        s << (quint32)kopf.size();
+        s.writeRawData(kopf.constData(), kopf.size());
+        for (int i = 0; i < 2; ++i) {
+            const QByteArray kennung("stratocumulus");
+            s << (quint16)kennung.size();
+            s.writeRawData(kennung.constData(), kennung.size());
+            s << (quint8)0 << (quint8)2 << (qint64)1761580800;
+            QByteArray jpeg;
+            QBuffer puffer(&jpeg);
+            puffer.open(QIODevice::WriteOnly);
+            bild(100 + i).save(&puffer, "JPEG", 85);
+            puffer.close();
+            s << (quint32)jpeg.size();
+            s.writeRawData(jpeg.constData(), jpeg.size());
+            s << (quint8)1;
+            QByteArray roh(kGroesse, '\0');
+            roh[i] = 127;
+            s.writeRawData(roh.constData(), kGroesse);
+            s << (float)(1.f / 127.f);      // Massstab -- und keine Laenge
+        }
+        a.close();
+
+        Nachlernen g;
+        g.netzSetzen(QLatin1String("abc123"), klassen());
+        QString f;
+        pruefen(g.laden(alt, &f), QLatin1String("Fassung 1 laden: ") + f);
+        pruefen(g.anzahl() == 2, QLatin1String("beide Eintraege da"));
+        pruefen(g.brauchtNeurechnung().size() == 2,
+                QLatin1String("Abdruecke ohne Laenge werden nachgerechnet"));
+        pruefen(g.bildDaten(0).startsWith("\xff\xd8"), QLatin1String("Bilder sind da"));
+        for (int i = 0; i < 2; ++i)
+            g.abdruckSetzen(i, abdruck(1, 0.1f * i), 12.f);
+        pruefen(g.nutzbare() == 2, QLatin1String("nach dem Nachrechnen nutzbar"));
+
+        const QString neu = ordner + QLatin1String("/fassung2.bin");
+        pruefen(g.speichern(neu, &f), QLatin1String("wieder speichern: ") + f);
+        QFile n(neu);
+        n.open(QIODevice::ReadOnly);
+        const QByteArray geschrieben = n.readAll();
+        n.close();
+        pruefen(geschrieben.contains("\"format\":2"), QLatin1String("geschrieben wird Fassung 2"));
+        Nachlernen h;
+        h.netzSetzen(QLatin1String("abc123"), klassen());
+        pruefen(h.laden(neu, &f), QLatin1String("Fassung 2 laden: ") + f);
+        pruefen(h.anzahl() == 2 && h.brauchtNeurechnung().isEmpty(),
+                QLatin1String("mit Laenge: nichts nachzurechnen"));
+
+        // Eine Fassung aus der Zukunft wird abgelehnt, nicht geraten.
+        QByteArray zukunft = geschrieben;
+        zukunft.replace("\"format\":2", "\"format\":3");
+        const QString spaeter = ordner + QLatin1String("/fassung3.bin");
+        QFile z(spaeter);
+        z.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        z.write(zukunft);
+        z.close();
+        Nachlernen k;
+        k.netzSetzen(QLatin1String("abc123"), klassen());
+        pruefen(!k.laden(spaeter, &f), QLatin1String("Fassung 3 scheitert"));
+        pruefen(f.contains(QLatin1String("Fassung")), QLatin1String("und sagt warum"));
     }
 
     aus << "-- Kaputte Dateien\n";
