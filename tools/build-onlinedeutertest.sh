@@ -22,7 +22,10 @@ BAU=${TMPDIR:-/tmp}/onlinedeutertest.bau
 mkdir -p "$BAU"
 "$MOC" "$PWD/src/OnlineDeuter.h" -o "$BAU/moc_OnlineDeuter.cpp"
 "$MOC" "$PWD/tests/onlinedeutertest.cpp" -o "$BAU/onlinedeutertest.moc"
+# -DSEGELFLUG_PRUEFSTAND schaltet die Umgebungsvariablen fuer Adresse und
+# Hilfsprogramm frei; in der ausgelieferten App gibt es sie nicht.
 g++ -std=c++11 -Wall -Wextra -Wno-unused-parameter -Wno-deprecated-copy -fPIC \
+    -DSEGELFLUG_PRUEFSTAND \
     -I "$SFOS" -I src -I "$BAU" $INC \
     "$SFOS/OnlineDeuter.cpp" "$SFOS/Json.cpp" "$BAU/moc_OnlineDeuter.cpp" \
     tests/onlinedeutertest.cpp -o "$BAU/onlinedeutertest" $LIB

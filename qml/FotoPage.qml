@@ -38,6 +38,8 @@ Page {
     property bool kameraDa: false
     // Woran man es sieht, aufgeklappt?
     property bool mehr: false
+    // Die Tafel zum Richtigstellen, aufgeklappt?
+    property bool richtig: false
 
     Connections {
         target: course
@@ -161,10 +163,14 @@ Page {
             Rectangle {
                 id: rahmen
                 width: spalte.width
-                height: (bild.status === Image.Ready && bild.sourceSize.width > 0)
-                        ? Math.round(width * bild.sourceSize.height
-                                     / bild.sourceSize.width)
-                        : Math.round(width * 0.75)
+                /* Feste Hoehe im Verhaeltnis 4:3, nicht aus dem Bild
+                   gerechnet.  Qt 4.7.4 gibt `sourceSize.height` als 0
+                   zurueck, wenn nur `sourceSize.width` gesetzt ist -- der
+                   Rahmen waere dann 0 Pixel hoch und das Foto unsichtbar
+                   (am Pruefstand gemessen).  Und eine Hoehe, die am
+                   geladenen Bild haengt, ist der Ringschluss aus Bild.qml.
+                   Also ein Kasten, in den das Bild hineinpasst. */
+                height: Math.round(width * 0.75)
                 visible: !page.foto.leer
                 color: Style.codeBg
                 border.color: Style.panelEdge
@@ -174,8 +180,17 @@ Page {
 
                 Image {
                     id: bild
-                    anchors.fill: parent
-                    anchors.margins: 1
+                    anchors.centerIn: parent
+                    /* Hochkant geschossene Fotos: Qt 4 dreht QML-Bilder
+                       nicht nach EXIF, waehrend das Netz sie gedreht sieht
+                       (Klassifizierer::bildLaden).  Also hier selbst
+                       drehen -- und bei 90 oder 270 Grad Breite und Hoehe
+                       tauschen, sonst steht das Bild aus dem Rahmen. */
+                    property bool quer: page.foto.drehung === 90
+                                        || page.foto.drehung === 270
+                    width: (quer ? rahmen.height : rahmen.width) - 2
+                    height: (quer ? rahmen.width : rahmen.height) - 2
+                    rotation: page.foto.drehung === undefined ? 0 : page.foto.drehung
                     source: page.foto.leer ? "" : "file://" + page.foto.pfad
                     sourceSize.width: 640
                     fillMode: Image.PreserveAspectFit
@@ -381,6 +396,18 @@ Page {
                         lineHeightMode: Text.ProportionalHeight
                     }
 
+                    // Das Gelernte hat die Reihenfolge gedreht -- sonst
+                    // waere nicht zu sehen, dass es etwas tut.
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        visible: page.foto.gelernt !== undefined
+                                 && page.foto.gelernt.korrigiert === true
+                        text: W.w("Das Gelernte hat dieses Urteil geändert.", course.language)
+                        font.pixelSize: Style.smallSize
+                        color: Style.accent
+                    }
+
                     // Rueckmeldung zum eigenen Tipp. Bei "weiss nicht"
                     // gibt es nichts zu bewerten.
                     Text {
@@ -514,6 +541,10 @@ Page {
                                  && page.foto.online.ok === true
                         text: page.foto.online.begruendung === undefined
                               ? "" : page.foto.online.begruendung
+                        /* Der Text kommt vom Server: als PlainText, nicht als
+                           AutoText -- sonst deutet Qt ein <img src="http://...">
+                           darin als Auszeichnung und holt das Bild wirklich ab. */
+                        textFormat: Text.PlainText
                         font.pixelSize: Style.bodySize
                         color: Style.text
                         lineHeight: 1.2
@@ -550,8 +581,157 @@ Page {
                                  && page.foto.online.ok !== true
                         text: page.foto.online.fehler === undefined
                               ? "" : page.foto.online.fehler
+                        /* Der Text kommt vom Server: als PlainText, nicht als
+                           AutoText -- sonst deutet Qt ein <img src="http://...">
+                           darin als Auszeichnung und holt das Bild wirklich ab. */
+                        textFormat: Text.PlainText
                         font.pixelSize: Style.bodySize
                         color: Style.bad
+                    }
+                }
+            }
+
+            // ---- Dazulernen --------------------------------------------
+            // Stimmen Claudes Urteil und der eigene Tipp ueberein, hat
+            // Course das Foto schon gemerkt (GELERNTES.md). Gehen sie
+            // auseinander, entscheidet hier der Leser -- und wer es besser
+            // weiss, stellt ohnehin richtig.
+            Panel {
+                width: parent.width
+                height: lernBlock.height + 2 * Style.pad
+                visible: page.foto.gelernt !== undefined
+                         && page.foto.gelernt.merkbar === true
+                         && page.foto.geraten !== ""
+
+                Column {
+                    id: lernBlock
+                    x: Style.pad
+                    y: Style.pad
+                    width: parent.width - 2 * Style.pad
+                    spacing: 8
+
+                    Text {
+                        text: W.w("Dazulernen", course.language)
+                        font.pixelSize: Style.headSize
+                        color: Style.text
+                    }
+
+                    // Schon gemerkt: was und wie viel insgesamt.
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        visible: page.foto.gelernt.gemerkt !== ""
+                        text: W.w("Gemerkt als ", course.language)
+                              + page.foto.gelernt.gemerktName + "."
+                        font.pixelSize: Style.bodySize
+                        color: Style.good
+                    }
+
+                    // Claude und der eigene Tipp gehen auseinander: wer hat recht?
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        visible: page.foto.gelernt.gemerkt === ""
+                                 && page.foto.online.fertig === true
+                                 && page.foto.online.ok === true
+                                 && page.foto.online.einig !== true
+                        text: W.w("Wessen Urteil soll das Netz lernen?", course.language)
+                        font.pixelSize: Style.bodySize
+                        color: Style.text
+                    }
+                    Row {
+                        width: parent.width
+                        spacing: Style.gap
+                        visible: page.foto.gelernt.gemerkt === ""
+                                 && page.foto.online.fertig === true
+                                 && page.foto.online.ok === true
+                                 && page.foto.online.einig !== true
+                                 && page.foto.online.klasse !== undefined
+                                 && page.foto.online.klasse !== ""
+                        Button {
+                            width: (parent.width - Style.gap) / 2
+                            text: W.w("Claude", course.language)
+                            onClicked: course.rememberPhoto(page.foto.online.klasse, 1)
+                        }
+                        Button {
+                            width: (parent.width - Style.gap) / 2
+                            visible: page.foto.geraten !== "?"
+                            text: W.w("Mein Tipp", course.language)
+                            onClicked: course.rememberPhoto(page.foto.geraten, 2)
+                        }
+                    }
+
+                    // Richtigstellen: die eigene Klasse waehlen, auch ohne Claude.
+                    Text {
+                        text: page.richtig ? W.w("Weniger", course.language)
+                                           : W.w("Es ist etwas anderes", course.language)
+                        font.pixelSize: Style.smallSize
+                        color: Style.accent
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -8
+                            onClicked: page.richtig = !page.richtig
+                        }
+                    }
+                    Grid {
+                        id: richtigTafel
+                        width: parent.width
+                        columns: 2
+                        spacing: 6
+                        visible: page.richtig
+
+                        Repeater {
+                            model: page.richtig ? course.classifierClasses : []
+                            Rectangle {
+                                width: (richtigTafel.width - 6) / 2
+                                height: richtigWahl.paintedHeight + 18
+                                radius: 6
+                                border.width: 1
+                                border.color: Style.panelEdge
+                                color: richtigDruck.pressed ? Style.panelEdge : Style.codeBg
+                                Text {
+                                    id: richtigWahl
+                                    x: 9
+                                    y: 9
+                                    width: parent.width - 18
+                                    wrapMode: Text.WordWrap
+                                    text: modelData.name
+                                    font.pixelSize: Style.smallSize
+                                    color: Style.text
+                                }
+                                MouseArea {
+                                    id: richtigDruck
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        course.rememberPhoto(modelData.id, 2);
+                                        page.richtig = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Wie weit das Gedaechtnis ist.
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        text: page.foto.gelernt.wirksam === true
+                              ? W.w("Gelernt: ", course.language)
+                                + page.foto.gelernt.anzahl
+                                + W.w(" Fotos — das Netz zieht sie mit ein.", course.language)
+                              : W.w("Gelernt: ", course.language)
+                                + page.foto.gelernt.anzahl
+                                + W.w(" Fotos. Ab ", course.language)
+                                + (page.foto.gelernt.anzahl + page.foto.gelernt.fehlende)
+                                + W.w(" zieht das Netz sie mit ein.", course.language)
+                        font.pixelSize: Style.smallSize
+                        color: Style.dim
+                    }
+                    Button {
+                        width: parent.width
+                        visible: page.foto.gelernt.anzahl > 0
+                        text: W.w("Gelerntes ansehen", course.language)
+                        onClicked: pageStack.push(Qt.resolvedUrl("GelerntesPage.qml"))
                     }
                 }
             }

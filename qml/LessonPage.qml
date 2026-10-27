@@ -25,6 +25,12 @@ Page {
         onLessonChanged: page.lektion = course.lesson
     }
 
+    // Ein Fachwort aufschlagen -- aus einem Verweis im Text oder aus der
+    // Liste darunter.
+    function begriffOeffnen(id) {
+        pageStack.push(Qt.resolvedUrl("BegriffPage.qml"), { kennung: id });
+    }
+
     Rectangle { anchors.fill: parent; color: Style.bg }
 
     Flickable {
@@ -62,6 +68,15 @@ Page {
                 color: Style.text
                 lineHeight: 1.25
                 lineHeightMode: Text.ProportionalHeight
+                // Die Fachwoerter im Text sind Verweise ins Glossar
+                // (Style.rich macht aus [[begriff:...]] ein <a href>).
+                // Alles andere wird nicht angefasst: der Kurs setzt keine
+                // weiteren Links, und ein unbekanntes Schema soll hier
+                // nichts aufmachen.
+                onLinkActivated: {
+                    if (link.indexOf("begriff:") === 0)
+                        page.begriffOeffnen(link.substring(8));
+                }
             }
 
             Bild {
@@ -131,6 +146,28 @@ Page {
                 font.family: Style.mono
                 font.pixelSize: Style.codeSize
                 color: Style.faint
+            }
+
+            // Die Fachwoerter der Lektion zum Nachschlagen. Sie stehen
+            // unten und nicht oben: wer liest, soll den Text lesen, und
+            // erst wer hinterher stockt, schlaegt nach.
+            Text {
+                text: W.w("Begriffe in dieser Lektion", course.language)
+                font.pixelSize: Style.headSize
+                color: Style.text
+                visible: !page.lektion.leer
+                         && page.lektion.begriffe !== undefined
+                         && page.lektion.begriffe.length > 0
+            }
+
+            Repeater {
+                model: page.lektion.leer || page.lektion.begriffe === undefined
+                       ? [] : page.lektion.begriffe
+                Button {
+                    width: spalte.width
+                    text: modelData.wort
+                    onClicked: page.begriffOeffnen(modelData.id)
+                }
             }
 
             Button {

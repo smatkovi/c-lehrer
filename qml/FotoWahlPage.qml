@@ -28,6 +28,22 @@ Page {
     }
 
     property string wurzel: "file:///home/user/MyDocs"
+    property variant ordner: []
+
+    Component.onCompleted: {
+        var moeglich = [
+            { name: "Kamera", pfad: "/DCIM" },
+            { name: "Bilder", pfad: "/Pictures" },
+            { name: "Alles", pfad: "" }
+        ];
+        var da = [];
+        for (var i = 0; i < moeglich.length; i++)
+            if (course.pathExists("/home/user/MyDocs" + moeglich[i].pfad))
+                da.push(moeglich[i]);
+        page.ordner = da;
+        if (da.length > 0)
+            bilder.folder = page.wurzel + da[0].pfad;
+    }
 
     Rectangle { anchors.fill: parent; color: Style.bg }
 
@@ -49,10 +65,11 @@ Page {
         Row {
             spacing: Style.gap
             Repeater {
-                model: [
-                    { name: "Kamera", pfad: "/DCIM" },
-                    { name: "Bilder", pfad: "/Pictures" }
-                ]
+                /* Nur die Ordner, die es auf diesem Geraet gibt:
+                   FolderListModel verwirft einen fehlenden Ordner still,
+                   `folder` behaelt dann den alten Wert, und die Taste taete
+                   scheinbar nichts. */
+                model: page.ordner
                 Rectangle {
                     width: 140
                     height: 52
@@ -91,7 +108,9 @@ Page {
 
         model: FolderListModel {
             id: bilder
-            folder: page.wurzel + "/DCIM"
+            // Gesetzt wird er in Component.onCompleted, sobald klar
+            // ist, welche Ordner es gibt.
+            folder: ""
             nameFilters: ["*.jpg", "*.jpeg", "*.JPG", "*.JPEG"]
             showDirs: false
             showDotAndDotDot: false
@@ -117,9 +136,11 @@ Page {
                 fillMode: Image.PreserveAspectCrop
                 clip: true
                 asynchronous: true
-                // Klein dekodieren -- ein volles Foto je Kachel bringt
-                // das N9 ins Schwitzen.
-                sourceSize.width: 160
+                /* Klein dekodieren -- ein volles Foto je Kachel bringt
+                   das N9 ins Schwitzen.  Nur EIN Mass setzen: Sind beide
+                   gesetzt, dekodiert Qt 4.7.4 genau auf 160x160 und laesst
+                   das Seitenverhaeltnis fallen, dann staucht die Kachel
+                   statt zu beschneiden (am Pruefstand gemessen). */
                 sourceSize.height: 160
                 // filePath ist hier schon eine URL ("file:///home/user/..."),
                 // kein nackter Pfad -- am Geraet nachgesehen. Ein

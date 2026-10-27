@@ -277,6 +277,15 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("ChaptersPage.qml"))
             }
 
+            // Das Glossar, wo der Kurs eines mitbringt. Erreichbar auch
+            // ohne Lektion: Nachschlagen ist kein Lernschritt.
+            Button {
+                width: parent.width
+                text: W.w("Glossar", course.language)
+                visible: course.hasGlossary
+                onClicked: pageStack.push(Qt.resolvedUrl("GlossarPage.qml"))
+            }
+
             Button {
                 width: parent.width
                 text: W.w("Spielwiese: eigenen Code laufen lassen", course.language)

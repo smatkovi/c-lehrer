@@ -99,6 +99,17 @@ function rich(source) {
                           return "<img src='" + bilderPfad + name + ".png' width='"
                                  + m.breite + "' height='" + m.hoehe + "'>";
                       });
+    // Verweise ins Glossar. make-kurs.py hat die Fachwoerter im Text durch
+    // [[begriff:<id>|<Wortform>]] ersetzt; hier wird daraus ein Link, den
+    // LessonPage und BegriffPage in onLinkActivated auffangen.
+    //
+    // Die Farbe steht im Markup, nicht in der Eigenschaft: linkColor gibt
+    // es in QtQuick 1.1 noch nicht, und ohne sie stuende der Verweis im
+    // Qt-Blau der Voreinstellung auf dunklem Grund. Unterstrichen wird er
+    // dazu, damit er sich nicht allein auf die Farbe verlassen muss.
+    out = out.replace(/\[\[begriff:([A-Za-z0-9_-]+)\|([^\]]+)\]\]/g,
+                      "<a href='begriff:$1'><font color='" + accent
+                      + "'><u>$2</u></font></a>");
     out = out.replace(/\n\n/g, "<br><br>");
     out = out.replace(/\n/g, "<br>");
     return out;
