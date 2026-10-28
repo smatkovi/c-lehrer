@@ -80,6 +80,26 @@ Page {
             font.pixelSize: Style.smallSize
             color: page.gelernt.kopf === true ? Style.good : Style.dim
         }
+        // Auch ohne eigenen Tipp von Claude lernen (nur bei "hoch").
+        Row {
+            width: parent.width
+            spacing: Style.gap
+            Switch {
+                id: vonClaude
+                anchors.verticalCenter: parent.verticalCenter
+                checked: course.learnFromClaude
+                onCheckedChanged: if (checked !== course.learnFromClaude) course.learnFromClaude = checked
+            }
+            Text {
+                width: parent.width - vonClaude.width - Style.gap
+                anchors.verticalCenter: parent.verticalCenter
+                wrapMode: Text.WordWrap
+                text: W.w("Auch ohne meinen Tipp von Claude lernen", course.language)
+                      + "\n" + W.w("Nur wenn Claude „hoch“ sagt und ich nichts geraten habe.", course.language)
+                font.pixelSize: Style.smallSize
+                color: Style.text
+            }
+        }
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
