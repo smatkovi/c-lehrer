@@ -166,7 +166,7 @@ int main(int argc, char **argv)
     pruefe(empf.antwort.value(QLatin1String("klasse")).toString() == QLatin1String("cirrus"),
            "klasse cirrus");
     pruefe(empf.antwort.value(QLatin1String("sicherheit")).toString() == QLatin1String("hoch"),
-           "sicherheit hoch aus dem Werkzeug");
+           "sicherheit hoch aus dem JSON");
     pruefe(empf.antwort.value(QLatin1String("begruendung")).toString().contains(QLatin1String("Schleier")),
            "begruendung uebernommen");
     pruefe(empf.antwort.value(QLatin1String("fehler")).toString().isEmpty(),
@@ -222,6 +222,14 @@ int main(int argc, char **argv)
            "Karte nennt Opus");
     pruefe(empf.antwort.value(QLatin1String("modell")).toString().contains(QLatin1String("Fable")),
            "und sagt, dass Fable fehlte");
+    // 1f. Fable verweigert (stop_reason refusal): Opus antwortet.
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/verweigert")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt nach der Verweigerung");
+    pruefe(empf.antwort.value(QLatin1String("ok")).toBool(), "ok ueber Opus nach Verweigerung");
+    pruefe(empf.antwort.value(QLatin1String("modell")).toString().contains(QLatin1String("abgelehnt")),
+           "Karte nennt die Verweigerung");
+
     // Der gute Fall nennt Fable.
     qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/v1/messages")).toLatin1());
     deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);

@@ -16,6 +16,7 @@ stdout (eine Zeile) und bleibt dann still.  Drei Endpunkte:
                 stop_reason max_tokens mit halbem JSON -- "abgeschnitten".
   /fable-aus    404 not_found fuer Fable, fuer Opus die normale Antwort --
                 der Rueckfall auf Opus.
+  /verweigert   stop_reason refusal fuer Fable, Opus antwortet normal.
   /fehler       401 mit dem Fehlerrumpf, den die API bei falschem
                 Schluessel schickt.
   /langsam      wartet zwei Sekunden, dann dasselbe wie /v1/messages --
@@ -34,6 +35,13 @@ ANTWORT_TEXT = (
     'der Tag bleibt thermisch brauchbar, aber die Front naht."}\n'
     "Hope that helps."
 )
+
+
+def modell_von(rumpf):
+    try:
+        return json.loads(rumpf).get("model")
+    except ValueError:
+        return None
 
 
 def pruefen(handler, rumpf):
@@ -77,22 +85,23 @@ def pruefen(handler, rumpf):
         return "image.source.data ist kein JPEG"
     if not texte[0].get("text"):
         return "text-Block ist leer"
-    werkzeuge = daten.get("tools")
-    if not isinstance(werkzeuge, list) or len(werkzeuge) != 1:
-        return "erwartet genau ein Werkzeug"
-    w = werkzeuge[0]
-    if w.get("name") != "urteil" or not isinstance(w.get("input_schema"), dict):
-        return "Werkzeug urteil mit input_schema fehlt"
-    felder = w["input_schema"].get("properties") or {}
+    if "thinking" in daten:
+        return "thinking-Feld darf nicht gesetzt sein (Fable lehnt disabled ab)"
+    if "tool_choice" in daten or "tools" in daten:
+        return "keine Werkzeuge: Fable lehnt erzwungene Werkzeugwahl ab"
+    form = (daten.get("output_config") or {}).get("format") or {}
+    if form.get("type") != "json_schema" or not isinstance(form.get("schema"), dict):
+        return "output_config.format json_schema fehlt"
+    schema = form["schema"]
+    felder = schema.get("properties") or {}
     if set(felder) != {"klasse", "sicherheit", "begruendung"}:
         return "Schema hat nicht die drei Felder"
     if "" not in (felder["klasse"].get("enum") or []):
         return "leere Kennung fehlt in der Aufzaehlung der Klassen"
-    wahl = daten.get("tool_choice") or {}
-    if wahl.get("type") != "tool" or wahl.get("name") != "urteil":
-        return "tool_choice erzwingt das Werkzeug nicht"
-    if daten.get("max_tokens", 0) < 600:
-        return "max_tokens zu knapp"
+    if schema.get("additionalProperties") is not False:
+        return "additionalProperties muss false sein"
+    if daten.get("max_tokens", 0) < 2000:
+        return "max_tokens zu knapp (das Nachdenken zaehlt mit)"
     return None
 
 
@@ -123,11 +132,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/langsam":
             time.sleep(2)
         if self.path == "/fable-aus":
-            try:
-                modell = json.loads(rumpf).get("model")
-            except ValueError:
-                modell = None
-            if modell == "claude-fable-5-1":
+            if modell_von(rumpf) == "claude-fable-5-1":
                 self.antworten(404, {
                     "type": "error",
                     "error": {"type": "not_found_error",
@@ -152,20 +157,25 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/abgeschnitten":
             inhalt = [{"type": "text", "text": 'Sure: {"klasse": "cirr'}]
             ende = "max_tokens"
+        elif self.path == "/verweigert" and modell_von(rumpf) == "claude-fable-5-1":
+            inhalt = []
+            ende = "refusal"
         else:
             inhalt = [{"type": "thinking", "thinking": "", "signature": ""},
-                      {"type": "tool_use", "id": "toolu_schein", "name": "urteil",
-                       "input": {"klasse": "cirrus", "sicherheit": "hoch",
-                                 "begruendung": "Feine, faserige Schleier hoch oben – "
-                                                "der Tag bleibt thermisch brauchbar."}}]
-            ende = "tool_use"
+                      {"type": "text", "text": json.dumps(
+                          {"klasse": "cirrus", "sicherheit": "hoch",
+                           "begruendung": "Feine, faserige Schleier hoch oben – "
+                                          "der Tag bleibt thermisch brauchbar."},
+                          ensure_ascii=False)}]
+            ende = "end_turn"
         self.antworten(200, {
             "id": "msg_schein",
             "type": "message",
             "role": "assistant",
-            "model": "claude-opus-5",
+            "model": modell_von(rumpf),
             "content": inhalt,
             "stop_reason": ende,
+            "stop_details": {"type": "refusal", "category": "other"} if ende == "refusal" else None,
             "stop_sequence": None,
             "usage": {"input_tokens": 1, "output_tokens": 1},
         })
