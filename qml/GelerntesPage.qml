@@ -94,8 +94,8 @@ Page {
                 width: parent.width - vonClaude.width - Style.gap
                 anchors.verticalCenter: parent.verticalCenter
                 wrapMode: Text.WordWrap
-                text: W.w("Auch ohne meinen Tipp von Claude lernen", course.language)
-                      + "\n" + W.w("Nur wenn Claude „hoch“ sagt und ich nichts geraten habe.", course.language)
+                text: W.w("Von Claude lernen, unabhängig von meinem Tipp", course.language)
+                      + "\n" + W.w("Sobald Claude „hoch“ sagt, auch gegen meinen Tipp.", course.language)
                 font.pixelSize: Style.smallSize
                 color: Style.text
             }

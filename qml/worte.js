@@ -18,8 +18,8 @@
 .pragma library
 
 var EN = {
-    "Auch ohne meinen Tipp von Claude lernen": "Learn from Claude even without my guess",
-    "Nur wenn Claude „hoch“ sagt und ich nichts geraten habe.": "Only when Claude says \"high\" and I made no guess.",
+    "Von Claude lernen, unabhängig von meinem Tipp": "Learn from Claude regardless of my guess",
+    "Sobald Claude „hoch“ sagt, auch gegen meinen Tipp.": "As soon as Claude says \"high\", even against my guess.",
     // -- Erkennungsmodus
     "Alle Bilder": "All images",
     "Bild ": "Image ",

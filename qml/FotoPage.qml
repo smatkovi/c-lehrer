@@ -531,6 +531,8 @@ Page {
                                  && page.foto.online.ok === true
                         text: W.w("Sicherheit: ", course.language)
                               + page.sicherheitsWort(page.foto.online.sicherheit)
+                              + (page.foto.online.modell === undefined || page.foto.online.modell === ""
+                                 ? "" : " · " + page.foto.online.modell)
                         font.pixelSize: Style.smallSize
                         color: Style.dim
                     }

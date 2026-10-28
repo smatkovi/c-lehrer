@@ -211,6 +211,24 @@ int main(int argc, char **argv)
     OnlineDeuter::protokollSetzen(QString());
     QFile::remove(protokoll);
 
+    // 1e. Fable nicht zu haben: dieselbe Anfrage noch einmal mit Opus.
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/fable-aus")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt nach dem Rueckfall");
+    pruefe(empf.antwort.value(QLatin1String("ok")).toBool(), "ok ueber Opus");
+    pruefe(empf.antwort.value(QLatin1String("klasse")).toString() == QLatin1String("cirrus"),
+           "klasse cirrus von Opus");
+    pruefe(empf.antwort.value(QLatin1String("modell")).toString().startsWith(QLatin1String("Opus")),
+           "Karte nennt Opus");
+    pruefe(empf.antwort.value(QLatin1String("modell")).toString().contains(QLatin1String("Fable")),
+           "und sagt, dass Fable fehlte");
+    // Der gute Fall nennt Fable.
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/v1/messages")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt (Fable)");
+    pruefe(empf.antwort.value(QLatin1String("modell")).toString() == QLatin1String("Fable"),
+           "Karte nennt Fable");
+
     // 2. Der 401-Fall.
     qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/fehler")).toLatin1());
     deuter.anfragen(foto, klassen, QLatin1String("en"), schluessel);

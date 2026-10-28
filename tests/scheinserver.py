@@ -14,6 +14,8 @@ stdout (eine Zeile) und bleibt dann still.  Drei Endpunkte:
   /prosa        nur Prosa ohne Urteil -- "Antwort nicht lesbar".
   /abgeschnitten
                 stop_reason max_tokens mit halbem JSON -- "abgeschnitten".
+  /fable-aus    404 not_found fuer Fable, fuer Opus die normale Antwort --
+                der Rueckfall auf Opus.
   /fehler       401 mit dem Fehlerrumpf, den die API bei falschem
                 Schluessel schickt.
   /langsam      wartet zwei Sekunden, dann dasselbe wie /v1/messages --
@@ -48,8 +50,8 @@ def pruefen(handler, rumpf):
         daten = json.loads(rumpf)
     except ValueError:
         return "Rumpf ist kein JSON"
-    if not isinstance(daten.get("model"), str) or not daten["model"]:
-        return "model fehlt"
+    if daten.get("model") not in ("claude-fable-5-1", "claude-opus-5"):
+        return "model ist weder Fable noch Opus: %r" % daten.get("model")
     if not isinstance(daten.get("max_tokens"), int):
         return "max_tokens fehlt"
     if not isinstance(daten.get("system"), str) or "cirrus" not in daten["system"]:
@@ -120,6 +122,18 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/langsam":
             time.sleep(2)
+        if self.path == "/fable-aus":
+            try:
+                modell = json.loads(rumpf).get("model")
+            except ValueError:
+                modell = None
+            if modell == "claude-fable-5-1":
+                self.antworten(404, {
+                    "type": "error",
+                    "error": {"type": "not_found_error",
+                              "message": "model: claude-fable-5-1"},
+                })
+                return
         grund = pruefen(self, rumpf)
         if grund:
             self.antworten(400, {
@@ -149,7 +163,7 @@ class Handler(BaseHTTPRequestHandler):
             "id": "msg_schein",
             "type": "message",
             "role": "assistant",
-            "model": "claude-sonnet-5",
+            "model": "claude-opus-5",
             "content": inhalt,
             "stop_reason": ende,
             "stop_sequence": None,
