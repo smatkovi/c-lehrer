@@ -166,11 +166,50 @@ int main(int argc, char **argv)
     pruefe(empf.antwort.value(QLatin1String("klasse")).toString() == QLatin1String("cirrus"),
            "klasse cirrus");
     pruefe(empf.antwort.value(QLatin1String("sicherheit")).toString() == QLatin1String("hoch"),
-           "sicherheit 'high' wird zu hoch");
+           "sicherheit hoch aus dem Werkzeug");
     pruefe(empf.antwort.value(QLatin1String("begruendung")).toString().contains(QLatin1String("Schleier")),
            "begruendung uebernommen");
     pruefe(empf.antwort.value(QLatin1String("fehler")).toString().isEmpty(),
            "fehler leer im guten Fall");
+
+    // 1b. Der alte Weg: JSON zwischen Prosa im Textblock.
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/text")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt bei Text");
+    pruefe(empf.antwort.value(QLatin1String("ok")).toBool(), "ok bei JSON im Text");
+    pruefe(empf.antwort.value(QLatin1String("klasse")).toString() == QLatin1String("cirrus"),
+           "klasse cirrus aus dem Text");
+    pruefe(empf.antwort.value(QLatin1String("sicherheit")).toString() == QLatin1String("hoch"),
+           "sicherheit 'high' wird zu hoch");
+
+    // 1c. Nur Prosa: nicht lesbar, mit dem Anfang des Textes -- und der
+    //     Rumpf liegt zum Nachlesen da.
+    const QString protokoll = ablage + QLatin1String("/letzte-antwort.json");
+    QFile::remove(protokoll);
+    OnlineDeuter::protokollSetzen(protokoll);
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/prosa")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("de"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt bei Prosa");
+    pruefe(!empf.antwort.value(QLatin1String("ok")).toBool(), "ok falsch bei Prosa");
+    {
+        const QString m = empf.antwort.value(QLatin1String("fehler")).toString();
+        pruefe(m.contains(QLatin1String("nicht lesbar")) && m.contains(QLatin1String("Hope that")),
+               "Meldung nennt den Anfang der Prosa");
+        QFile pf(protokoll);
+        pruefe(pf.open(QIODevice::ReadOnly) && pf.readAll().contains("lovely sky"),
+               "Rumpf im Protokoll");
+        pruefe((pf.permissions() & (QFile::ReadGroup | QFile::ReadOther)) == 0,
+               "Protokoll nur fuer den Benutzer lesbar");
+    }
+
+    // 1d. Abgeschnitten.
+    qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/abgeschnitten")).toLatin1());
+    deuter.anfragen(foto, klassen, QLatin1String("en"), schluessel);
+    pruefe(empf.warten(&deuter, 20000), "fertig() kommt bei Abschnitt");
+    pruefe(empf.antwort.value(QLatin1String("fehler")).toString().contains(QLatin1String("cut off")),
+           "abgeschnitten wird benannt");
+    OnlineDeuter::protokollSetzen(QString());
+    QFile::remove(protokoll);
 
     // 2. Der 401-Fall.
     qputenv("SEGELFLUG_API_URL", (basis + QLatin1String("/fehler")).toLatin1());

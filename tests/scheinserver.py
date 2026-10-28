@@ -4,11 +4,16 @@
 Bindet an 127.0.0.1 auf einen freien Port, druckt die Portnummer auf
 stdout (eine Zeile) und bleibt dann still.  Drei Endpunkte:
 
-  /v1/messages  prueft Kopfzeilen und Rumpf; stimmt alles, kommt eine
-                echte Antwort mit einem Nachdenk-Block vor dem Text, und
-                im Text steht das JSON zwischen Prosa -- so, wie das
-                Modell es auch tun koennte.  Stimmt etwas nicht, 400 mit
-                einer Meldung, die sagt, was fehlte.
+  /v1/messages  prueft Kopfzeilen und Rumpf (samt Werkzeug und
+                tool_choice); stimmt alles, kommt eine Antwort mit einem
+                Nachdenk-Block und dem Urteil als tool_use-Block -- so, wie
+                die API es bei erzwungenem Werkzeug liefert.  Stimmt etwas
+                nicht, 400 mit einer Meldung, die sagt, was fehlte.
+  /text         dasselbe, aber das Urteil als JSON zwischen Prosa im
+                Textblock (der alte Weg; der Leser muss ihn noch koennen).
+  /prosa        nur Prosa ohne Urteil -- "Antwort nicht lesbar".
+  /abgeschnitten
+                stop_reason max_tokens mit halbem JSON -- "abgeschnitten".
   /fehler       401 mit dem Fehlerrumpf, den die API bei falschem
                 Schluessel schickt.
   /langsam      wartet zwei Sekunden, dann dasselbe wie /v1/messages --
@@ -70,6 +75,22 @@ def pruefen(handler, rumpf):
         return "image.source.data ist kein JPEG"
     if not texte[0].get("text"):
         return "text-Block ist leer"
+    werkzeuge = daten.get("tools")
+    if not isinstance(werkzeuge, list) or len(werkzeuge) != 1:
+        return "erwartet genau ein Werkzeug"
+    w = werkzeuge[0]
+    if w.get("name") != "urteil" or not isinstance(w.get("input_schema"), dict):
+        return "Werkzeug urteil mit input_schema fehlt"
+    felder = w["input_schema"].get("properties") or {}
+    if set(felder) != {"klasse", "sicherheit", "begruendung"}:
+        return "Schema hat nicht die drei Felder"
+    if "" not in (felder["klasse"].get("enum") or []):
+        return "leere Kennung fehlt in der Aufzaehlung der Klassen"
+    wahl = daten.get("tool_choice") or {}
+    if wahl.get("type") != "tool" or wahl.get("name") != "urteil":
+        return "tool_choice erzwingt das Werkzeug nicht"
+    if daten.get("max_tokens", 0) < 600:
+        return "max_tokens zu knapp"
     return None
 
 
@@ -107,16 +128,30 @@ class Handler(BaseHTTPRequestHandler):
                           "message": "Pruefung: " + grund},
             })
             return
+        if self.path == "/text":
+            inhalt = [{"type": "thinking", "thinking": "", "signature": ""},
+                      {"type": "text", "text": ANTWORT_TEXT}]
+            ende = "end_turn"
+        elif self.path == "/prosa":
+            inhalt = [{"type": "text", "text": "Hope that helps, lovely sky today."}]
+            ende = "end_turn"
+        elif self.path == "/abgeschnitten":
+            inhalt = [{"type": "text", "text": 'Sure: {"klasse": "cirr'}]
+            ende = "max_tokens"
+        else:
+            inhalt = [{"type": "thinking", "thinking": "", "signature": ""},
+                      {"type": "tool_use", "id": "toolu_schein", "name": "urteil",
+                       "input": {"klasse": "cirrus", "sicherheit": "hoch",
+                                 "begruendung": "Feine, faserige Schleier hoch oben – "
+                                                "der Tag bleibt thermisch brauchbar."}}]
+            ende = "tool_use"
         self.antworten(200, {
             "id": "msg_schein",
             "type": "message",
             "role": "assistant",
             "model": "claude-sonnet-5",
-            "content": [
-                {"type": "thinking", "thinking": "", "signature": ""},
-                {"type": "text", "text": ANTWORT_TEXT},
-            ],
-            "stop_reason": "end_turn",
+            "content": inhalt,
+            "stop_reason": ende,
             "stop_sequence": None,
             "usage": {"input_tokens": 1, "output_tokens": 1},
         })
