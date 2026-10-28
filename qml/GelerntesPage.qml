@@ -95,7 +95,7 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 wrapMode: Text.WordWrap
                 text: W.w("Von Claude lernen, unabhängig von meinem Tipp", course.language)
-                      + "\n" + W.w("Sobald Claude „hoch“ sagt, auch gegen meinen Tipp.", course.language)
+                      + "\n" + W.w("Sobald Fable „hoch“ sagt, auch gegen meinen Tipp; bei Opus nur per Knopf.", course.language)
                 font.pixelSize: Style.smallSize
                 color: Style.text
             }

@@ -19,7 +19,7 @@
 
 var EN = {
     "Von Claude lernen, unabhängig von meinem Tipp": "Learn from Claude regardless of my guess",
-    "Sobald Claude „hoch“ sagt, auch gegen meinen Tipp.": "As soon as Claude says \"high\", even against my guess.",
+    "Sobald Fable „hoch“ sagt, auch gegen meinen Tipp; bei Opus nur per Knopf.": "As soon as Fable says \"high\", even against my guess; with Opus only by button.",
     // -- Erkennungsmodus
     "Alle Bilder": "All images",
     "Bild ": "Image ",
